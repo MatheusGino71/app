@@ -1,0 +1,17 @@
+# Dependencies and builds
+node_modules/
+.next/
+out/
+dist/
+*.tsbuildinfo
+
+# Local environment and credentials
+.env*
+!.env.example
+.vercel/
+*.pem
+
+# Tooling and OS files
+.DS_Store
+*.log
+.npmrc
