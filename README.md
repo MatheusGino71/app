@@ -13,7 +13,7 @@ npm run dev
 
 Abra http://localhost:3000.
 
-A home em `/` contém apenas a cena tipográfica ATELIER. A rolagem, inclusive ao arrastar a barra ou deslizar no celular, controla a câmera até preencher a tela e revelar o formulário na mesma cena. O clique na palavra ou em “Entrar no Atelier” reproduz essa mesma sequência em 2,2 segundos. Não há redirecionamento nem montagem de outra página durante a transição; “Voltar” inverte a animação. A preferência de movimento reduzido é respeitada.
+A home em `/` contém apenas a cena tipográfica ATELIER. A rolagem, inclusive ao arrastar a barra ou deslizar no celular, controla a câmera até preencher a tela e revelar o formulário na mesma cena. O clique na palavra reproduz essa mesma sequência em 2,2 segundos. Não há redirecionamento nem montagem de outra página durante a transição; “Voltar” inverte a animação. A preferência de movimento reduzido é respeitada.
 
 O formulário também pode ser aberto diretamente em `/entrar`. Ele reúne login, cadastro e recuperação de senha, com validação de campos e alternância de visibilidade da senha. O serviço de autenticação, o login com Google e o envio de e-mails ainda não estão conectados: os formulários informam essa condição, não criam contas e não enviam nem persistem senhas. O link “Explorar demonstração” abre o painel existente em `/workspace`.
 
