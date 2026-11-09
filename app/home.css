@@ -1,0 +1,16 @@
+/* The home is a single camera scene, ending in the mounted account form. */
+.atelier-entry { background: #f5f5f0; color: #263d30; }
+.entry-portal [data-gp-caption] { left: 8%; right: 8%; bottom: 8%; font-size: 11px; letter-spacing: .03em; }
+.entry-portal [data-gp-hint] { color: #64765b; font-size: 10px; }
+.entry-portal [data-gp-enter] { min-height: 44px; gap: 25px; }
+.entry-portal [data-gp-fallback] { font-weight: 900; }
+.entry-field { position: absolute; inset: 0; overflow: hidden; background: radial-gradient(ellipse at 60% 40%, #82956850, transparent 65%), linear-gradient(130deg, #1b3427, #405a39 65%, #203b2e); }
+.entry-field > span { position: absolute; width: 130%; height: 24%; left: -15%; top: 14%; border-radius: 50%; transform: rotate(-35deg); background: linear-gradient(180deg, #abbc9155, #66885c33 20%, #c0c69e33 45%, #1d392955); box-shadow: inset 0 1px #d5d7ad33, 0 35px 60px #112c2444; }
+.entry-field > span:nth-child(2) { top: 48%; left: 10%; }
+.entry-field > span:nth-child(3) { top: 84%; left: 20%; }
+.entry-portal [data-gp-content] > .account-page { min-height: 100%; }
+@media (max-width: 600px) {
+  .entry-portal [data-gp-caption] { left: 7%; right: 7%; font-size: 10px; gap: 18px; }
+  .entry-portal [data-gp-hint] { max-width: 140px; font-size: 9px; line-height: 1.6; }
+  .entry-portal [data-gp-enter] { gap: 12px; white-space: nowrap; }
+}
