@@ -3,8 +3,8 @@ import AccountForm from "../components/account-form";
 import "./account.css";
 
 export const metadata: Metadata = {
-  title: "Sign in or create an account — ATELIER.",
-  description: "Access your Atelier workspace and turn every relationship into a new opportunity.",
+  title: "Team access — ATELIER.",
+  description: "Internal access for the Grace Pro commercial team.",
   robots: { index: false, follow: false },
 };
 

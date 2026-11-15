@@ -1,6 +1,6 @@
 ﻿# ATELIER — Operação Grace Pro
 
-Aplicação Next.js com portal de clientes, painel interno, diagnóstico Deep Test e classificação comercial. Cliente e equipe têm cadastros e permissões separados.
+Aplicação Next.js para o time comercial interno da Grace Pro, com painel de carteiras, diagnóstico Deep Test e classificação comercial dos salões. O acesso exige conta da equipe; o cadastro público de clientes está desativado.
 
 O idioma padrão da interface é inglês. O acesso e o cadastro incluem seleção de idioma com busca e bandeiras; a troca é feita somente pelo seletor e fica salva para acompanhar o diagnóstico e os níveis. Consulte [idiomas da interface](docs/idiomas.md) para os catálogos locais, ajustes de tradução e manutenção.
 
@@ -15,9 +15,9 @@ npm run dev
 
 Abra http://localhost:3000. A entrada animada ATELIER foi preservada.
 
-- `/entrar`: cadastro público e acesso dos clientes.
-- `/diagnostico`: ficha Deep Test do próprio salão.
-- `/meu-nivel`: resultado, comparação de níveis, confirmação de e-mail e evidências.
+- `/entrar`: acesso interno e criação de conta da equipe por convite.
+- `/diagnostico`: ficha Deep Test autenticada.
+- `/meu-nivel`: resultado do diagnóstico, comparação de níveis e evidências.
 - `/equipe`: acesso interno por convite ou código de configuração inicial.
 - `/workspace`: painel exclusivo da equipe Grace Pro.
 - `/diagnostico?demo=1`: experiência fictícia sem criação de conta.
@@ -27,11 +27,11 @@ Uma configuração de desenvolvimento foi criada em `.env.local`, com código ad
 
 ## Cadastro e permissões
 
-O cadastro público cria sempre um **cliente**, inclusive se for a primeira conta. Informar um papel administrativo no pedido não concede acesso interno. Depois do cadastro, a transição abre a ficha do salão; o envio leva automaticamente ao nível estimado.
+A entrada animada, `/entrar` e `/equipe` usam o mesmo acesso interno. Cadastro e login levam ao workspace. O servidor recusa cadastros sem `kind: staff` e logins de clientes; informar um papel administrativo no pedido não concede permissões. O cadastro da equipe funciona sem provedor de e-mail.
 
 A equipe entra por `/equipe`. Para criar o primeiro administrador, use o valor de `ATELIER_SETUP_TOKEN` configurado no servidor. As próximas contas internas exigem convite associado ao e-mail. Os papéis internos são comercial, gestor e administrador.
 
-Clientes acessam somente o próprio salão, rascunho, resultado e anexos. Não consultam o painel, carteiras, equipe, convites, conferências ou ações internas. Comerciais acessam a própria carteira. Gestores e administradores acompanham a operação e podem transferir carteiras. Apenas administradores geram convites e códigos administrativos de recuperação.
+A compatibilidade com dados antigos de clientes preserva o isolamento desses registros, mas não oferece cadastro público nem entrada no workspace. Comerciais acessam a própria carteira. Gestores e administradores acompanham a operação e podem transferir carteiras. Apenas administradores geram convites e códigos administrativos de recuperação.
 
 As senhas usam scrypt com salt aleatório. Sessões e códigos são armazenados como hash. Cookies são HttpOnly, SameSite e Secure em produção. Mutações exigem mesma origem e autorização no servidor; há limite de tentativas. Trocas de senha revogam as sessões anteriores.
 
@@ -47,7 +47,7 @@ As senhas usam scrypt com salt aleatório. Sessões e códigos são armazenados 
 
 Os limites inferiores são inclusivos. O cálculo é feito pelo servidor.
 
-O valor informado pelo cliente gera uma **estimativa pendente de conferência**. O painel interno mostra a fila em **Gestão da operação**. A equipe registra o valor conferido, fonte, justificativa e decisão. O endereço de e-mail do cliente deve estar confirmado antes da aprovação.
+O diagnóstico simplificado gera uma **estimativa pendente de conferência**. O painel interno mostra a fila em **Gestão da operação**. A equipe registra o valor conferido, fonte, justificativa e decisão. Contas internas não precisam confirmar e-mail para essa operação. A verificação de endereço continua aplicada apenas a registros antigos de clientes.
 
 Uma conferência pode corrigir o valor e, assim, o nível. A recusa pede correção ao cliente. Um novo diagnóstico mantém o nível anteriormente confirmado até ser conferido. Importações oficiais de compras feitas pela gestão registram confirmação com a fonte indicada. Os diagnósticos anteriores não são apagados.
 
@@ -55,7 +55,7 @@ Na comparação, selecionar ORIGIN, SIGNATURE ou ICON muda somente as informaç�
 
 ## Ficha e seis dimensões
 
-A ficha Deep Test tem sete etapas, cobrindo identificação, compra e marcas, fornecedores, serviços, influência, formação, protocolos, revenda, capacidade, acordos e revisão. O cliente não escolhe estrelas qualitativas para classificar a si mesmo.
+A ficha Deep Test tem sete etapas, cobrindo identificação, compra e marcas, fornecedores, serviços, influência, formação, protocolos, revenda, capacidade, acordos e revisão. O formulário simplificado não permite atribuir estrelas qualitativas; essas avaliações pertencem à equipe no workspace.
 
 Sortimento, influência, técnica, revenda, capacidade e compromisso são independentes, sem soma ou nota global. Estrelas não mudam a categoria de compra. Notas qualitativas exigem evidência ou justificativa da equipe.
 
@@ -65,9 +65,9 @@ Cada visita é um diagnóstico preservado, com autor, data e versão dos critér
 
 ## E-mails
 
-Confirmação de endereço e recuperação automática estão implementadas pela API do Resend. Configure `RESEND_API_KEY`, `MAIL_FROM` e `ATELIER_APP_ORIGIN`. O remetente deve estar verificado no provedor. A confirmação expira em 24 horas; recuperação em uma hora. Links são de uso único. A recuperação não revela se um endereço está cadastrado.
+O acesso interno usa convites e códigos de recuperação emitidos pelo administrador, sem depender de e-mail. Recuperação automática opcional está implementada pela API do Resend. Configure `RESEND_API_KEY`, `MAIL_FROM` e `ATELIER_APP_ORIGIN`. O remetente deve estar verificado no provedor. A confirmação expira em 24 horas; recuperação em uma hora. Links são de uso único. A recuperação não revela se um endereço está cadastrado.
 
-Em desenvolvimento, `MAIL_TRANSPORT=file` grava as mensagens em `.data/mail/`, sem enviar e-mails reais. Os links ficam no campo `text` dos arquivos privados. Esse transporte não é usado na Vercel. Sem provedor configurado em produção, o cadastro público informa indisponibilidade; não simula envio.
+Em desenvolvimento, `MAIL_TRANSPORT=file` grava as mensagens em `.data/mail/`, sem enviar e-mails reais. Os links ficam no campo `text` dos arquivos privados. Esse transporte não é usado na Vercel. Sem provedor configurado, “Esqueceu a senha?” abre a recuperação por código administrativo. O sistema não simula envio de e-mail.
 
 ## Anexos privados
 
@@ -92,7 +92,7 @@ A exportação respeita os filtros de salões e neutraliza fórmulas de planilha
 
 A aplicação está preparada para Vercel com banco remoto Turso/libSQL. Configure `TURSO_DATABASE_URL` e `TURSO_AUTH_TOKEN`. O cliente oficial usa HTTPS e transações remotas. Sem URL remota, apenas o desenvolvimento usa `.data/atelier.sqlite`.
 
-**Na Vercel, o fallback local é recusado**, evitando perda de dados em filesystem efêmero. O código adapta as operações ao banco remoto; a conexão real não foi testada por falta de URL e token. As migrações são aditivas e preservam registros existentes.
+**Na Vercel, o fallback local é recusado**, evitando perda de dados em filesystem efêmero. O banco remoto `atelier-grace-pro` está conectado ao ambiente Production pela integração Turso Cloud da Vercel. A conexão real e o serviço de contas foram verificados após o redeploy. As migrações são aditivas e preservam registros existentes.
 
 O guia com as variáveis e passos de ativação está em [docs/publicacao-vercel.md](docs/publicacao-vercel.md).
 
@@ -124,12 +124,12 @@ npm run build
 npm run test:http
 ```
 
-Os testes cobrem cadastro público e interno, isolamento de clientes, histórico, concorrência, revisão de compras, confirmação de e-mail, recuperação, anexos, importação, backup e restauração. O teste HTTP usa servidor de produção isolado na porta 3117, banco temporário e caixa de saída local; não cadastra usuários na operação real.
+Os testes cobrem permissões, isolamento de registros, histórico, concorrência, revisão de compras, recuperação, anexos, importação, backup e restauração. O teste HTTP confirma cadastro público bloqueado, convites internos, acesso sem provedor de e-mail, recuperação administrativa e isolamento entre carteiras. O teste HTTP usa servidor de produção isolado na porta 3117, banco temporário e envio de e-mail desativado; não cadastra usuários na operação real.
 
 O workflow `.github/workflows/verify.yml` executa os testes e o build no GitHub após envio do código.
 
 ## Estado de ativação
 
-O projeto já está publicado na Vercel por integração com a branch `main`. As funcionalidades estão implementadas e testadas localmente; o banco remoto, o envio externo de mensagens e os backups agendados ainda exigem configuração nas contas do proprietário. Nenhum serviço pago foi contratado.
+O projeto já está publicado na Vercel por integração com a branch `main`. O banco remoto Turso Cloud `atelier-grace-pro` foi criado no plano Starter gratuito, região iad1, e conectado somente a Production. As variáveis de banco, origem e configuração administrativa estão salvas na Vercel. A leitura do banco e o serviço de contas responderam após o redeploy. O primeiro administrador ainda precisa ser cadastrado com o código de configuração. E-mails automáticos são opcionais e não estão configurados; backups agendados ainda dependem dos secrets e da ativação do workflow. Nenhum plano pago foi selecionado.
 
 A interface foi verificada no navegador em desktop e celular, incluindo inglês como padrão, seleção manual de idioma, busca, bandeiras, persistência, RTL, animação de entrada, preenchimento do diagnóstico e comparação de níveis.

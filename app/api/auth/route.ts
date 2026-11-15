@@ -1,7 +1,7 @@
 ﻿import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { SESSION_COOKIE } from "../../../lib/server/auth";
-import { AppError, getStore } from "../../../lib/server/store";
+import { AppError, getStore, requireStaff } from "../../../lib/server/store";
 import { assertSameOrigin } from "../../../lib/server/http";
 import { mailAvailable, sendAccountMail } from "../../../lib/server/mail";
 export const runtime = "nodejs";
@@ -30,12 +30,9 @@ export async function POST(request: Request) {
     }
     if (input.action === "reset") { await store.resetPassword(input); return NextResponse.json({ ok: true }); }
     if (input.action !== "login" && input.action !== "signup") throw new AppError("Operação inválida.");
-    if (input.action === "signup" && input.kind !== "staff" && !mailAvailable()) throw new AppError("O cadastro aguarda a configuração do envio de e-mail no servidor.", 503);
-    const user = input.action === "signup" ? await store.signup(input) : await store.login(input); const session = await store.createSession(user, input.remember === true);
+    if (input.action === "signup" && input.kind !== "staff") throw new AppError("Este recurso pertence à equipe Grace Pro.", 403);
+    const user = input.action === "signup" ? await store.signup(input) : await store.login(input); requireStaff(user); const session = await store.createSession(user, input.remember === true);
     jar.set(SESSION_COOKIE, session.token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: session.maxAge });
-    let delivery: "sent" | "local" | "pending" | undefined;
-    if (input.action === "signup" && mailAvailable()) { try { const token = await store.verification(user); if (token) delivery = await sendAccountMail(user.email, token.code, "verify"); } catch { delivery = "pending"; } }
-    const redirectTo = user.role !== "cliente" ? "/workspace" : input.action === "signup" ? "/diagnostico?inicio=1" : await store.onboardingProfile(user) ? "/meu-nivel" : "/diagnostico";
-    return NextResponse.json({ user, redirectTo, delivery });
+    return NextResponse.json({ user, redirectTo: "/workspace" });
   } catch (e) { return NextResponse.json({ error: e instanceof AppError ? e.message : "Não foi possível processar o acesso. Tente novamente." }, { status: e instanceof AppError ? e.status : 400 }); }
 }
