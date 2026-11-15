@@ -1,4 +1,6 @@
 "use client";
+import { useI18n } from "../i18n/language-provider";
+import LanguageSelector from "../i18n/language-selector";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArrowRight, Check, ShieldCheck } from "lucide-react";
@@ -7,6 +9,7 @@ import { initialOnboardingDraft, ONBOARDING_DEMO_KEY } from "../../../lib/onboar
 import DiagnosticForm from "../crm/diagnostic-form";
 import EmailStatus from "./email-status";
 export default function OnboardingFlow({ demo, user, profile, savedDraft, fresh }: { demo: boolean; user: User; profile: OnboardingProfile | null; savedDraft: Draft | null; fresh: boolean }) {
+  const { t } = useI18n();
   const [draft, setDraft] = useState(() => initialOnboardingDraft(user, profile, savedDraft));
   const [ready, setReady] = useState(!demo); const [notice, setNotice] = useState(""); const [transition, setTransition] = useState(false);
   useEffect(() => {
@@ -40,14 +43,14 @@ export default function OnboardingFlow({ demo, user, profile, savedDraft, fresh 
     setNotice("Rascunho salvo. Você pode continuar agora ou retomar ao acessar sua conta.");
   }
   return <main className="crm crm-journey">
-    <header className="journey-header"><Link className="crm-brand" href="/">ATELIER<span>.</span></Link><span>GRACE PRO <i /> CONHECER PARA CRESCER</span><Link href={demo || user.role === "cliente" ? "/entrar" : "/workspace"}>{demo || user.role === "cliente" ? "Voltar ao acesso" : "Meu workspace"}<ArrowRight size={15} /></Link></header>
-    <div className="journey-content"><div className="journey-breadcrumb" aria-label="Progresso do cadastro"><span className="complete"><Check size={13} />{demo ? "Demonstração" : "Conta criada"}</span><i /><span className="current">02 · Seu salão</span><i /><span>03 · Seu nível</span></div>
-      {fresh && <p className="journey-welcome">{demo ? "Experimente o caminho completo com dados fictícios." : `Bem-vindo, ${user.name.split(" ")[0]}. Sua conta está pronta; agora é a vez do seu salão.`}</p>}
+    <header className="journey-header"><LanguageSelector/><Link className="crm-brand" href="/">{t("ATELIER")}<span>.</span></Link><span>{t("GRACE PRO")} <i /> {t("CONHECER PARA CRESCER")}</span><Link href={demo || user.role === "cliente" ? "/entrar" : "/workspace"}>{demo || user.role === "cliente" ? t("Voltar ao acesso") : t("Meu workspace")}<ArrowRight size={15} /></Link></header>
+    <div className="journey-content"><div className="journey-breadcrumb" aria-label={t("Progresso do cadastro")}><span className="complete"><Check size={13} />{demo ? t("Demonstração") : t("Conta criada")}</span><i /><span className="current">{t("02 · Seu salão")}</span><i /><span>{t("03 · Seu nível")}</span></div>
+      {fresh && <p className="journey-welcome">{demo ? t("Experimente o caminho completo com dados fictícios.") : t("Bem-vindo, {v0}. Sua conta está pronta; agora é a vez do seu salão.", { v0: user.name.split(" ")[0] })}</p>}
       {!demo && user.role === "cliente" && <EmailStatus verified={user.emailVerified}/>}
-      {notice && <div className="crm-note" role="status">{notice}</div>}
-      {ready ? <DiagnosticForm data={data} initialDraft={draft} onboarding onSave={finish} onDraft={save} onCancel={() => window.location.assign(demo || user.role === "cliente" ? "/entrar" : "/workspace")} /> : <div className="journey-loading" role="status">Preparando sua ficha…</div>}
-      <footer className="journey-footer"><ShieldCheck size={14} />Seu perfil é construído com as informações do seu salão.</footer>
+      {notice && <div className="crm-note" role="status">{t(notice)}</div>}
+      {ready ? <DiagnosticForm data={data} initialDraft={draft} onboarding onSave={finish} onDraft={save} onCancel={() => window.location.assign(demo || user.role === "cliente" ? "/entrar" : "/workspace")} /> : <div className="journey-loading" role="status">{t("Preparando sua ficha…")}</div>}
+      <footer className="journey-footer"><ShieldCheck size={14} />{t("Seu perfil é construído com as informações do seu salão.")}</footer>
     </div>
-    {transition && <div className="journey-transition" role="status" aria-live="polite"><span className="journey-transition-mark">A.</span><span className="crm-overline">DIAGNÓSTICO CONCLUÍDO</span><h2>Seu perfil está pronto.</h2><p>Vamos conhecer seu nível Grace Pro.</p><ArrowRight size={24} /></div>}
+    {transition && <div className="journey-transition" role="status" aria-live="polite"><span className="journey-transition-mark">{t("A.")}</span><span className="crm-overline">{t("DIAGNÓSTICO CONCLUÍDO")}</span><h2>{t("Seu perfil está pronto.")}</h2><p>{t("Vamos conhecer seu nível Grace Pro.")}</p><ArrowRight size={24} /></div>}
   </main>;
 }

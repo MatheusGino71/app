@@ -1,4 +1,6 @@
 "use client";
+import { useI18n } from "./i18n/language-provider";
+import LanguageSelector from "./i18n/language-selector";
 import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Check, Eye, EyeOff, Info, LockKeyhole, Sparkles } from "lucide-react";
@@ -11,6 +13,7 @@ const copy = {
   reset: { eyebrow: "UM NOVO ACESSO", title: "Escolha sua nova senha.", description: "Confirme seu e-mail e defina uma nova senha para sua conta.", submit: "Atualizar minha senha" },
 };
 export default function AccountForm({ embedded = false, onBack, staff = false, initialMode = "login", initialCode = "" }: { embedded?: boolean; onBack?: () => void; staff?: boolean; initialMode?: Mode; initialCode?: string }) {
+  const { t } = useI18n();
   const [mode, setMode] = useState<Mode>(initialMode);
   const [values, setValues] = useState<Record<Field,string>>({ name: "", email: "", password: "", confirmPassword: "", code: initialCode });
   const [errors, setErrors] = useState<Partial<Record<Field,string>>>({});
@@ -40,35 +43,35 @@ export default function AccountForm({ embedded = false, onBack, staff = false, i
     finally { setValues(v => ({ ...v, password: "", confirmPassword: "" })); setBusy(false); }
   }
   function input(field: Field, label: string, type = "text", autoComplete = "off") {
-    return <div className="account-field"><label htmlFor={`account-${field}`}>{label}</label><input id={`account-${field}`} name={field} type={type} autoComplete={autoComplete} value={values[field]} onChange={e => update(field,e.target.value)} required aria-invalid={!!errors[field]} aria-describedby={errors[field] ? `${field}-error` : undefined} />{errors[field] && <span className="account-error" id={`${field}-error`}>{errors[field]}</span>}</div>;
+    return <div className="account-field"><label htmlFor={`account-${field}`}>{t(label)}</label><input id={`account-${field}`} name={field} type={type} autoComplete={autoComplete} value={values[field]} onChange={e => update(field,e.target.value)} required aria-invalid={!!errors[field]} aria-describedby={errors[field] ? `${field}-error` : undefined} />{errors[field] && <span className="account-error" id={`${field}-error`}>{t(errors[field]!)}</span>}</div>;
   }
   return <Container className="account-page">
-    {transition && <div className="account-flow-transition" role="status"><span className="account-transition-mark">A.</span><span>ATELIER / GRACE PRO</span><h2>{mode === "signup" ? "Sua conta está pronta." : "Boas-vindas de volta."}</h2><p>{staff ? "Preparando o painel da operação." : mode === "signup" ? "Agora, vamos conhecer seu salão." : "Preparando seu perfil."}</p><ArrowRight size={22}/></div>}
+    {transition && <div className="account-flow-transition" role="status"><span className="account-transition-mark">{t("A.")}</span><span>{t("ATELIER / GRACE PRO")}</span><h2>{mode === "signup" ? t("Sua conta está pronta.") : t("Boas-vindas de volta.")}</h2><p>{staff ? t("Preparando o painel da operação.") : mode === "signup" ? t("Agora, vamos conhecer seu salão.") : t("Preparando seu perfil.")}</p><ArrowRight size={22}/></div>}
     <div className="account-shell"><section className="account-left" aria-labelledby="account-title">
-      <div className="account-topbar">{onBack ? <><button type="button" onClick={onBack} className="account-brand">ATELIER<span>.</span></button><button type="button" onClick={onBack} className="account-back"><ArrowLeft size={14}/>Voltar</button></> : <><Link className="account-brand" href="/">ATELIER<span>.</span></Link><Link className="account-back" href="/"><ArrowLeft size={14}/>Voltar</Link></>}</div>
-      <div className="account-form-wrap"><span className="account-eyebrow"><i/>{staff ? "ACESSO DA EQUIPE GRACE PRO" : current.eyebrow}</span><h1 id="account-title" ref={heading} tabIndex={-1}>{current.title}</h1><p className="account-description">{staff ? "Ambiente interno para comerciais, gestores e administradores." : current.description}</p>
+      <div className="account-topbar">{onBack ? <button type="button" onClick={onBack} className="account-brand">ATELIER<span>.</span></button> : <Link className="account-brand" href="/">ATELIER<span>.</span></Link>}<div className="account-topbar-actions"><LanguageSelector/>{onBack ? <button type="button" onClick={onBack} className="account-back"><ArrowLeft size={14}/>{t("Voltar")}</button> : <Link className="account-back" href="/"><ArrowLeft size={14}/>{t("Voltar")}</Link>}</div></div>
+      <div className="account-form-wrap"><span className="account-eyebrow"><i/>{staff ? t("ACESSO DA EQUIPE GRACE PRO") : t(current.eyebrow)}</span><h1 id="account-title" ref={heading} tabIndex={-1}>{t(current.title)}</h1><p className="account-description">{staff ? t("Ambiente interno para comerciais, gestores e administradores.") : t(current.description)}</p>
       <form onSubmit={submit} noValidate>
         {mode === "signup" && input("name","Nome completo","text","name")}{input("email","E-mail","email","email")}
-        {mode !== "forgot" && <div className="account-field"><label htmlFor="account-password">{mode === "reset" ? "Nova senha" : "Senha"}</label><div className="account-password"><input id="account-password" name="password" type={visiblePassword ? "text" : "password"} autoComplete={mode === "login" ? "current-password" : "new-password"} maxLength={128} placeholder={mode === "login" ? "Digite sua senha" : "Use 10 ou mais caracteres"} value={values.password} onChange={e => update("password",e.target.value)} aria-invalid={!!errors.password} aria-describedby={errors.password ? "password-error" : undefined}/><button type="button" aria-label={visiblePassword ? "Ocultar senha" : "Mostrar senha"} onClick={() => setVisiblePassword(!visiblePassword)}>{visiblePassword ? <EyeOff size={17}/> : <Eye size={17}/>}</button></div>{errors.password && <span className="account-error" id="password-error">{errors.password}</span>}</div>}
+        {mode !== "forgot" && <div className="account-field"><label htmlFor="account-password">{mode === "reset" ? t("Nova senha") : t("Senha")}</label><div className="account-password"><input id="account-password" name="password" type={visiblePassword ? "text" : "password"} autoComplete={mode === "login" ? "current-password" : "new-password"} maxLength={128} placeholder={mode === "login" ? t("Digite sua senha") : t("Use 10 ou mais caracteres")} value={values.password} onChange={e => update("password",e.target.value)} aria-invalid={!!errors.password} aria-describedby={errors.password ? "password-error" : undefined}/><button type="button" aria-label={visiblePassword ? t("Ocultar senha") : t("Mostrar senha")} onClick={() => setVisiblePassword(!visiblePassword)}>{visiblePassword ? <EyeOff size={17}/> : <Eye size={17}/>}</button></div>{errors.password && <span className="account-error" id="password-error">{t(errors.password)}</span>}</div>}
         {(mode === "signup" || mode === "reset") && input("confirmPassword","Confirmar senha",visiblePassword ? "text" : "password","new-password")}
         {(mode === "reset" || staff && mode === "signup") && input("code",mode === "reset" ? "Código de recuperação" : needsSetup ? "Código de configuração da equipe" : "Código de convite da equipe")}
-        {mode === "login" && <div className="account-options"><label className="account-remember"><input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)}/>Manter conectado</label><button type="button" className="account-text-button" onClick={() => changeMode("forgot")}>Esqueceu a senha?</button></div>}
-        <button className="account-submit" disabled={busy} type="submit">{busy ? "Processando?" : current.submit}<ArrowRight size={16}/></button>
+        {mode === "login" && <div className="account-options"><label className="account-remember"><input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)}/>{t("Manter conectado")}</label><button type="button" className="account-text-button" onClick={() => changeMode("forgot")}>{t("Esqueceu a senha?")}</button></div>}
+        <button className="account-submit" disabled={busy} type="submit">{busy ? t("Processando…") : t(current.submit)}<ArrowRight size={16}/></button>
       </form>
-      {notice && <div className="account-notice" role="status"><Info size={17}/><p>{notice}</p></div>}
-      {mode === "signup" && <p className="account-description">{staff ? "Contas da equipe exigem convite ou o código de configuração inicial." : "O cadastro de clientes é livre. Você receberá um e-mail para confirmar seu endereço."}</p>}
-      <p className="account-switch">{mode === "login" ? <>Ainda não tem conta? <button type="button" onClick={() => changeMode("signup")}>Criar conta</button></> : <>Já tem uma conta? <button type="button" onClick={() => changeMode("login")}>Entrar</button></>}</p>
-      {mode === "forgot" && <p className="account-switch"><button type="button" onClick={() => changeMode("reset")}>Já tenho um código de recuperação</button></p>}
-      <div className="account-demo"><span><i/>CONHEÇA O ATELIER</span><p>Experimente o formulário e compare os níveis com dados fictícios.</p><Link href="/diagnostico?demo=1">Experimentar diagnóstico <ArrowUpRight size={15}/></Link></div>
-      <p className="account-switch"><Link href={staff ? "/entrar" : "/equipe"}>{staff ? "Sou cliente: acessar meu salão" : "Sou da equipe Grace Pro"}</Link></p>
-      </div><div className="account-bottom"><span>© {new Date().getFullYear()} Atelier</span><span><LockKeyhole size={12}/>Informação com propósito.</span></div>
+      {notice && <div className="account-notice" role="status"><Info size={17}/><p>{t(notice)}</p></div>}
+      {mode === "signup" && <p className="account-description">{staff ? t("Contas da equipe exigem convite ou o código de configuração inicial.") : t("O cadastro de clientes é livre. Você receberá um e-mail para confirmar seu endereço.")}</p>}
+      <p className="account-switch">{mode === "login" ? <>{t("Ainda não tem conta?")} <button type="button" onClick={() => changeMode("signup")}>{t("Criar conta")}</button></> : <>{t("Já tem uma conta?")} <button type="button" onClick={() => changeMode("login")}>{t("Entrar")}</button></>}</p>
+      {mode === "forgot" && <p className="account-switch"><button type="button" onClick={() => changeMode("reset")}>{t("Já tenho um código de recuperação")}</button></p>}
+      <div className="account-demo"><span><i/>{t("CONHEÇA O ATELIER")}</span><p>{t("Experimente o formulário e compare os níveis com dados fictícios.")}</p><Link href="/diagnostico?demo=1">{t("Experimentar diagnóstico")} <ArrowUpRight size={15}/></Link></div>
+      <p className="account-switch"><Link href={staff ? "/entrar" : "/equipe"}>{staff ? t("Sou cliente: acessar meu salão") : t("Sou da equipe Grace Pro")}</Link></p>
+      </div><div className="account-bottom"><span>© {new Date().getFullYear()} {t("Atelier")}</span><span><LockKeyhole size={12}/>{t("Informação com propósito.")}</span></div>
     </section>
-      <aside className="account-art" aria-label="Conheça melhor. Conquiste mais.">
+      <aside className="account-art" aria-label={t("Conheça melhor. Conquiste mais.")}>
         <div className="account-art-texture" aria-hidden="true"><span className="account-ribbon ribbon-one" /><span className="account-ribbon ribbon-two" /><span className="account-ribbon ribbon-three" /><span className="account-ribbon ribbon-four" /><span className="account-ribbon ribbon-five" /></div>
-        <div className="account-art-top"><span>UM NOVO OLHAR.</span><Sparkles size={19} strokeWidth={1.2} /></div>
-        <div className="account-art-heading"><span className="account-art-mark">A<span>.</span></span><h2>Conheça melhor.<br /><em>Conquiste mais.</em></h2><p>Existe potencial em cada conversa.<br />A gente ajuda você a enxergar.</p></div>
-        <div className="account-art-note"><span className="account-note-icon"><Check size={18} /></span><div><strong>Relacionamentos que abrem portas.</strong><p>Conecte cada visita a novas possibilidades para o seu negócio.</p><span>CAPTAR <i /> ENTENDER <i /> AGIR</span></div></div>
-        <span className="account-art-footer">INTELIGÊNCIA EM CADA DECISÃO.</span>
+        <div className="account-art-top"><span>{t("UM NOVO OLHAR.")}</span><Sparkles size={19} strokeWidth={1.2} /></div>
+        <div className="account-art-heading"><span className="account-art-mark">{t("A")}<span>.</span></span><h2>{t("Conheça melhor.")}<br /><em>{t("Conquiste mais.")}</em></h2><p>{t("Existe potencial em cada conversa.")}<br />{t("A gente ajuda você a enxergar.")}</p></div>
+        <div className="account-art-note"><span className="account-note-icon"><Check size={18} /></span><div><strong>{t("Relacionamentos que abrem portas.")}</strong><p>{t("Conecte cada visita a novas possibilidades para o seu negócio.")}</p><span>{t("CAPTAR")} <i /> {t("ENTENDER")} <i /> {t("AGIR")}</span></div></div>
+        <span className="account-art-footer">{t("INTELIGÊNCIA EM CADA DECISÃO.")}</span>
       </aside>
     </div>
   </Container>;

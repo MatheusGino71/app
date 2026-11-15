@@ -1,0 +1,5 @@
+{
+  "Invitation for {email}: {code}\nExpires in: {expires}. Share the code through your team's channel.": "Convite para {email}: {code}\nValidade: {expires}. Partilhe o código pelo canal da sua equipa.",
+  "Recovery for {email}: {code}\nExpires in: {expires}. Use it on the account recovery screen.": "Recuperação para {email}: {code}\nValidade: {expires}. Use no ecrã de recuperação de acesso.",
+  "Customer": "Cliente"
+}

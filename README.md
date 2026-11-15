@@ -2,6 +2,8 @@
 
 Aplicação Next.js com portal de clientes, painel interno, diagnóstico Deep Test e classificação comercial. Cliente e equipe têm cadastros e permissões separados.
 
+O idioma padrão da interface é inglês. O acesso e o cadastro incluem seleção de idioma com busca e bandeiras; a troca é feita somente pelo seletor e fica salva para acompanhar o diagnóstico e os níveis. Consulte [idiomas da interface](docs/idiomas.md) para os catálogos locais, ajustes de tradução e manutenção.
+
 ## Desenvolvimento local
 
 Requer Node.js 22.13 ou superior.
@@ -128,6 +130,6 @@ O workflow `.github/workflows/verify.yml` executa os testes e o build no GitHub 
 
 ## Estado de ativação
 
-As funcionalidades estão implementadas e testadas localmente. A publicação real, o envio externo de mensagens e os backups agendados exigem conectar a Vercel e configurar o banco e o provedor de e-mail. Nenhum serviço pago foi contratado e nenhuma publicação foi anunciada como concluída.
+O projeto já está publicado na Vercel por integração com a branch `main`. As funcionalidades estão implementadas e testadas localmente; o banco remoto, o envio externo de mensagens e os backups agendados ainda exigem configuração nas contas do proprietário. Nenhum serviço pago foi contratado.
 
-A tentativa de inspeção visual pelo navegador foi interrompida pela ferramenta por não conseguir confirmar a URL com segurança. A conferência de layout e interações em desktop e celular ainda precisa ser concluída. Os testes HTTP não substituem essa validação.
+A interface foi verificada no navegador em desktop e celular, incluindo inglês como padrão, seleção manual de idioma, busca, bandeiras, persistência, RTL, animação de entrada, preenchimento do diagnóstico e comparação de níveis.

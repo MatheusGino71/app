@@ -4,8 +4,8 @@ import "./home.css";
 import "./entrar/account.css";
 
 export const metadata: Metadata = {
-  title: "ATELIER. — Inteligência Comercial",
-  description: "Conheça melhor. Conquiste mais. Entre no seu workspace Atelier.",
+  title: "ATELIER. — Commercial Intelligence",
+  description: "Understand better. Achieve more. Welcome to your Atelier workspace.",
 };
 
 export default function Home() {

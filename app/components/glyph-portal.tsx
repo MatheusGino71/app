@@ -32,6 +32,7 @@ export type GlyphPortalProps = {
   fontWeight?: number;
   annotations?: boolean;
   enterLabel?: string;
+  hint?: ReactNode;
   showEnterButton?: boolean;
   /** Optional destination when clicking the word or the entry caption. */
   enterHref?: string;
@@ -97,7 +98,7 @@ function scrollParent(element: HTMLElement): HTMLElement | null {
 export default function GlyphPortal({
   word = "SUBLIME", focusChar, interactive = true, background, front, children, scrollLength = 2.4,
   fontFamily = DEFAULT_FONT, fontWeight = 900, annotations = false,
-  enterLabel = "Enter section", showEnterButton = true, enterHref, immersive = false, onEnter, className, style, onProgress,
+  enterLabel = "Enter section", hint, showEnterButton = true, enterHref, immersive = false, onEnter, className, style, onProgress,
 }: GlyphPortalProps) {
   const uid = `gp-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
   const clipId = `${uid}-clip`;
@@ -447,10 +448,10 @@ export default function GlyphPortal({
         </select></label>
         {front && <div data-gp-front>{front}</div>}
         {enterHref && <Link data-gp-word-link href={enterHref}><span>Entrar no {text}</span></Link>}
-        {onEnter && <button type="button" data-gp-word-link onClick={onEnter} aria-label={`Entrar no ${text}`}><span>Entrar no {text}</span></button>}
+        {onEnter && <button type="button" data-gp-word-link onClick={onEnter} aria-label={`${enterLabel} ${text}`}><span>{enterLabel} {text}</span></button>}
         <span data-gp-fallback aria-hidden="true" style={{ fontFamily, fontWeight: weight }}>{text}</span>
         <div data-gp-caption>
-          <span data-gp-hint aria-hidden="true">{onEnter ? "Clique ou role para entrar." : interactive ? "Scroll to enter." : annotations ? "A passage through type" : ""}</span>
+          <span data-gp-hint aria-hidden="true">{hint ?? (onEnter ? "Clique ou role para entrar." : interactive ? "Scroll to enter." : annotations ? "A passage through type" : "")}</span>
           {showEnterButton && (onEnter ? <button type="button" data-gp-enter onClick={onEnter}>{enterLabel}<span aria-hidden="true">↘</span></button> : enterHref ? <Link data-gp-enter href={enterHref}>{enterLabel}<span aria-hidden="true">↗</span></Link> : <a data-gp-enter href={`#${uid}-content`}>{enterLabel}<span aria-hidden="true">↘</span></a>)}
         </div>
         {immersive && content}

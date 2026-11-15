@@ -55,4 +55,4 @@ O job não usa banco local como fallback no CI e não imprime chaves. Artefatos 
 
 A rotina de testes confirma localmente isolamento de contas, tokens, classificação, conferência de compras, evidências privadas, backup e restauração. O adaptador remoto foi implementado pela interface oficial, mas falta validar uma conexão real com credenciais do serviço.
 
-A validação visual no navegador permanece pendente porque o controle do navegador foi interrompido pela ferramenta ao não conseguir confirmar a URL. Não se deve considerar os testes HTTP como uma inspeção de responsividade ou de animações.
+A interface foi verificada no navegador em desktop e celular: seleção de idioma com busca e bandeiras, inglês como padrão, persistência da escolha explícita, leitura RTL, preservação dos campos, diagnóstico em sete etapas, classificação e comparação de níveis. Os testes HTTP verificam separadamente contas, permissões e persistência.

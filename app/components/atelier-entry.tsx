@@ -3,9 +3,11 @@
 import { useCallback, useEffect, useRef } from "react";
 import GlyphPortal from "./glyph-portal";
 import AccountForm from "./account-form";
+import { useI18n } from "./i18n/language-provider";
 
 /** One mounted scene: scroll and click drive exactly the same camera timeline. */
 export default function AtelierEntry() {
+  const { t } = useI18n();
   const scene = useRef<HTMLDivElement>(null);
   const animation = useRef(0);
   const entered = useRef(false);
@@ -76,7 +78,7 @@ export default function AtelierEntry() {
   return <div ref={scene} className="atelier-entry">
     <GlyphPortal word="ATELIER" focusChar="A" interactive={false} immersive scrollLength={1.6}
       fontFamily='"Arial Black", "Helvetica Neue", Arial, sans-serif' fontWeight={900}
-      showEnterButton={false} className="entry-portal" onEnter={() => play()} onProgress={onProgress}
+      showEnterButton={false} enterLabel={t("Entrar")} hint={t("Continuar")} className="entry-portal" onEnter={() => play()} onProgress={onProgress}
       style={{ "--gp-paper": "#f5f5f0", "--gp-ink": "#263d30", "--gp-field": "#203b2e", "--gp-foreground": "#f5f2e9" }}
       background={<div className="entry-field" aria-hidden="true"><span /><span /><span /></div>}
     >

@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import LanguageProvider from "./components/i18n/language-provider";
+import "./components/i18n/language.css";
 
 export const metadata: Metadata = {
-  title: "ATELIER. — Inteligência Comercial",
-  description: "Uma experiência premium para mapear clientes, identificar perfis e transformar dados em ações comerciais.",
+  title: "ATELIER. — Commercial Intelligence",
+  description: "Understand your clients, discover their profiles and turn insights into business opportunities.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
@@ -16,8 +18,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
-      <body className="antialiased">{children}</body>
+    <html lang="en" dir="ltr" suppressHydrationWarning>
+      <body className="antialiased"><LanguageProvider>{children}</LanguageProvider></body>
     </html>
   );
 }

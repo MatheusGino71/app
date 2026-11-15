@@ -1,0 +1,41 @@
+.language-selector { position: relative; color: #27372d; font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-align: start; z-index: 80; }
+.language-selector button, .language-selector input { font: inherit; }
+.language-trigger { min-height: 44px; max-width: 230px; display: inline-flex; align-items: center; gap: 8px; padding: 7px 11px; border: 1px solid #e4e7dc; background: #fff; color: #52614e; border-radius: 7px; cursor: pointer; }
+.language-trigger > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.language-selector img { flex-shrink: 0; object-fit: cover; border-radius: 2px; box-shadow: 0 0 0 1px #203b2e12; }
+.language-panel { position: absolute; inset-inline-end: 0; top: calc(100% + 9px); width: min(356px, calc(100vw - 48px)); border: 1px solid #e4e7dc; background: #fff; border-radius: 12px; box-shadow: 0 16px 55px #203b2e26; padding: 16px; }
+.language-panel-heading { display: flex; align-items: start; justify-content: space-between; gap: 10px; margin-bottom: 15px; }
+.language-panel-heading strong { font-size: 15px; font-weight: 500; display: block; margin: 1px 0 5px; }
+.language-panel-heading span { display: block; font-size: 11px; color: #727a72; line-height: 1.6; }
+.language-panel-heading > button { display: grid; place-items: center; width: 36px; height: 36px; border: 0; background: #f5f6f2; color: #52614e; border-radius: 6px; cursor: pointer; flex-shrink: 0; }
+.language-search { position: relative; display: flex; align-items: center; gap: 8px; border: 1px solid #dce2d6; border-radius: 7px; background: #f5f6f2; padding: 0 11px; color: #727a72; }
+.language-search input { border: 0; background: transparent; color: #27372d; width: 100%; min-width: 0; min-height: 44px; outline-offset: 3px; }
+.language-options { max-height: min(330px, 45svh); overflow: auto; overscroll-behavior: contain; margin: 10px -5px; padding: 0 5px; scrollbar-width: thin; }
+.language-options > button { display: flex; align-items: center; gap: 12px; text-align: start; padding: 10px; width: 100%; min-height: 56px; border: 0; background: transparent; border-radius: 7px; color: #52614e; cursor: pointer; }
+.language-options > button.active, .language-options > button:hover { background: #f1f4ec; }
+.language-options > button[aria-selected=true] { color: #203b2e; background: #eaf0e3; }
+.language-options > button > span { flex: 1; min-width: 0; }
+.language-options strong { display: block; font-size: 13px; font-weight: 500; overflow-wrap: anywhere; }
+.language-options small { display: block; font-size: 10px; margin-top: 4px; color: #727a72; }
+.language-panel-footer { border-top: 1px solid #e7e9e2; padding-top: 12px; font-size: 10px; color: #727a72; line-height: 1.6; }
+.language-empty { padding: 15px 10px; line-height: 1.6; }
+.language-failure { color: #9e4e41; }
+.language-loading { animation: language-spin 1s linear infinite; flex-shrink: 0; }
+.language-selector :is(button,input):focus-visible { outline: 3px solid #8ea17c; outline-offset: 2px; }
+.account-topbar-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: flex-end; }
+.account-topbar { flex-wrap: wrap; }
+.journey-header { flex-wrap: wrap; }
+.journey-header .language-selector { margin-inline-start: auto; }
+html[dir=rtl] .account-password input { padding-left: 46px; padding-right: 13px; }
+html[dir=rtl] .account-password > button { inset: 1px auto 1px 1px; }
+html[dir=rtl] .account-art-heading { text-align: right; }
+html[dir=rtl] :is(.lucide-arrow-right,.lucide-arrow-left,.lucide-arrow-up-right,.lucide-chevron-right) { transform: scaleX(-1); }
+html[dir=rtl] .crm-sidebar { inset: 0 0 0 auto; border-right: 0; border-left: 1px solid var(--crm-border); }
+html[dir=rtl] .crm-main { margin-left: 0; margin-right: 252px; }
+@keyframes language-spin { to { transform: rotate(360deg); } }
+@media (max-width: 760px) { .language-trigger { max-width: 190px; font-size: 11px !important; } .language-search input { font-size: 16px; } .account-topbar-actions { gap: 8px; } .language-panel { position: fixed; inset: 20px 16px auto; width: auto; max-width: 440px; max-height: calc(100svh - 40px); margin-inline: auto; } .language-options { max-height: min(330px, calc(100svh - 230px)); } .crm-topbar { height: auto; min-height: 64px; flex-wrap: wrap; gap: 8px; padding-block: 10px; } .crm-topbar .language-trigger { max-width: 150px; } }
+@media (max-width: 1200px) { html[dir=rtl] .crm-main { margin-right: 218px; } }
+@media (max-width: 980px) { html[dir=rtl] .crm-main { margin-right: 200px; } }
+@media (max-width: 760px) { html[dir=rtl] .crm-main { margin-right: 0; } html[dir=rtl] .crm-sidebar { transform: translateX(110%); } html[dir=rtl] .crm-sidebar.open { transform: none; } }
+@media (max-width: 380px) { .account-topbar-actions { width: 100%; justify-content: space-between; } }
+@media (prefers-reduced-motion: reduce) { .language-loading { animation: none; } }
