@@ -1,0 +1,9 @@
+"use client";
+import {useEffect,useState} from "react";
+type Attachment={id:string;name:string;created_at:string};
+export default function EvidenceFiles({salonId}:{salonId:string}){
+ const [files,setFiles]=useState<Attachment[]>([]);const [busy,setBusy]=useState(false);const [error,setError]=useState("");
+ async function refresh(){const r=await fetch(`/api/evidence?salonId=${encodeURIComponent(salonId)}`,{cache:"no-store"});const d=await r.json();if(!r.ok)throw new Error(d.error);setFiles(d.files);}
+ useEffect(()=>{let active=true;fetch(`/api/evidence?salonId=${encodeURIComponent(salonId)}`,{cache:"no-store"}).then(async r=>{const d=await r.json();if(!r.ok)throw new Error(d.error);if(active)setFiles(d.files);}).catch(e=>{if(active)setError(e.message);});return()=>{active=false;};},[salonId]);
+ return <section className="crm-evidence-panel"><h3>Evidências do salão</h3><p>Envie fotos ou documentos que ajudem a equipe a conferir seu diagnóstico. PDF, PNG, JPEG ou WebP, até 1 MB por arquivo.</p><label className="crm-field"><span>Adicionar evidência</span><input type="file" accept="application/pdf,image/png,image/jpeg,image/webp" disabled={busy} onChange={async e=>{const input=e.currentTarget;const file=input.files?.[0];if(!file)return;setBusy(true);setError("");try{if(file.size>1_000_000)throw new Error("Use um arquivo de até 1 MB.");const form=new FormData();form.set("file",file);form.set("salonId",salonId);const r=await fetch("/api/evidence",{method:"POST",body:form});const d=await r.json();if(!r.ok)throw new Error(d.error);await refresh();input.value="";}catch(e){setError((e as Error).message);}finally{setBusy(false);}}}/></label>{busy&&<p role="status">Enviando evidência…</p>}{error&&<p className="crm-error" role="alert">{error}</p>}<ul>{files.map(f=><li key={f.id}><a href={`/api/evidence?id=${encodeURIComponent(f.id)}`}>{f.name}</a></li>)}</ul></section>;
+}

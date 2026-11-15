@@ -1,0 +1,30 @@
+name: Backup criptografado
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *'
+permissions:
+  contents: read
+jobs:
+  backup:
+    if: ${{ vars.ATELIER_BACKUP_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    env:
+      TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+      TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+      ATELIER_BACKUP_KEY: ${{ secrets.ATELIER_BACKUP_KEY }}
+      ATELIER_BACKUP_DIR: backups-encrypted
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: node scripts/backup.cjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backup-encrypted-${{ github.run_id }}
+          path: backups-encrypted/*.enc
+          retention-days: 14
+          if-no-files-found: error

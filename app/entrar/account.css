@@ -31,6 +31,13 @@
 .account-text-button { color: #5e7752; border: 0; background: none; font-size: 10px !important; padding: 0; min-height: 44px; }
 .account-submit { width: 100%; min-height: 46px; display: flex; align-items: center; justify-content: center; gap: 16px; border: 1px solid var(--account-green); border-radius: 6px; color: #fff; background: var(--account-green); font-size: 12px !important; transition: background .2s; }
 .account-submit:hover { background: #35533d; }
+.account-flow-transition { position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; padding: 30px; text-align: center; background: #eff2e8; color: #3c5638; animation: account-flow-in .3s ease-out both; }
+.account-transition-mark { font: italic 110px Georgia, serif; line-height: 1.2; letter-spacing: -9px; margin-bottom: 12px; }
+.account-flow-transition > span:nth-child(2) { font-size: 9px; letter-spacing: 2px; }
+.account-flow-transition h2 { font: 400 37px Georgia, serif; letter-spacing: -1px; margin: 8px 0 0; }
+.account-flow-transition p { font-size: 13px; color: #697461; margin: 0 0 15px; }
+@keyframes account-flow-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .account-flow-transition { animation: none; } }
 .account-separator { display: flex; align-items: center; gap: 12px; font-size: 9px; color: #90988a; margin: 19px 0; }
 .account-separator > span { flex: 1; height: 1px; background: var(--account-line); }
 .account-google { width: 100%; min-height: 46px; border: 1px solid var(--account-line); border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 10px; background: white; color: #374332; font-size: 11px !important; position: relative; transition: background .2s; }

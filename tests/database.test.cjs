@@ -1,0 +1,2 @@
+require("./register.cjs");const {test}=require("node:test");const assert=require("node:assert/strict");const {openDatabase}=require("../lib/server/database.ts");
+test("Vercel nunca usa fallback para arquivo SQLite efemero",()=>{const before=process.env.VERCEL;try{process.env.VERCEL="1";assert.throws(()=>openDatabase(":memory:"),/TURSO_DATABASE_URL/);}finally{if(before===undefined)delete process.env.VERCEL;else process.env.VERCEL=before;}});
