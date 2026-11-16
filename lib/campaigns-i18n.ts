@@ -26,7 +26,9 @@ export type CampaignLocaleKey =
   | "status_confirmed" | "status_contacted" | "status_planned" | "step" | "target_per_salon"
   | "target_units_sold" | "third_place" | "timeline_subtitle" | "timeline_title" | "total"
   | "total_delivered_value" | "total_share" | "total_units" | "unit_price" | "unknown_salon" | "week"
-  | "position" | "professional_name" | "remove_professional" | "sold" | "units";
+  | "position" | "professional_name" | "remove_professional" | "sold" | "units"
+  | "step_select" | "step_select_desc" | "step_activate" | "step_activate_desc" | "step_compete" | "step_compete_desc"
+  | "step_reward" | "step_reward_desc" | "step_replenish" | "step_replenish_desc";
 
 type CampaignMessages = Record<CampaignLocaleKey, string>;
 
@@ -72,7 +74,10 @@ const en: CampaignMessages = {
   target_units_sold: "Target units sold", third_place: "3rd place", timeline_subtitle: "A practical 30-day cadence",
   timeline_title: "ACTIVATION TIMELINE", total: "Total", total_delivered_value: "Total delivered value",
   total_share: "of total prize", total_units: "total units", unit_price: "Unit price", unknown_salon: "Unknown salon", week: "Week",
-  position: "Position", professional_name: "Professional name", remove_professional: "Remove professional", sold: "sold", units: "units"
+  position: "Position", professional_name: "Professional name", remove_professional: "Remove professional", sold: "sold", units: "units",
+  step_select: "SELECT", step_select_desc: "30 professional salons selected across territory", step_activate: "ACTIVATE", step_activate_desc: "Target 150 Home Care units per salon in 30 days",
+  step_compete: "COMPETE", step_compete_desc: "Stylists compete individually for verified sell-out", step_reward: "REWARD", step_reward_desc: "Three highest performers rewarded per qualifying salon",
+  step_replenish: "REPLENISH", step_replenish_desc: "Consumer sales drive immediate replenishment orders"
 };
 
 const pt: CampaignMessages = {
@@ -101,7 +106,10 @@ const pt: CampaignMessages = {
   status_confirmed: "Confirmado", status_contacted: "Contatado", status_planned: "Planejado", target_per_salon: "Meta por salão",
   target_units_sold: "Unidades na meta", third_place: "3º lugar", timeline_subtitle: "Uma cadência prática de 30 dias",
   timeline_title: "CRONOGRAMA DE ATIVAÇÃO", total_delivered_value: "Valor total entregue", week: "Semana",
-  position: "Posição", professional_name: "Nome do profissional", remove_professional: "Remover profissional", sold: "vendidas", units: "unidades"
+  position: "Posição", professional_name: "Nome do profissional", remove_professional: "Remover profissional", sold: "vendidas", units: "unidades",
+  step_select: "SELECIONE", step_select_desc: "30 salões profissionais selecionados em todo o território", step_activate: "ATIVE", step_activate_desc: "Meta de 150 unidades de Home Care por salão em 30 dias",
+  step_compete: "COMPITA", step_compete_desc: "Profissionais competem individualmente pelo sell-out validado", step_reward: "PREMIE", step_reward_desc: "Os três melhores recebem prêmios em cada salão elegível",
+  step_replenish: "REPONHA", step_replenish_desc: "As vendas ao consumidor impulsionam pedidos imediatos de reposição"
 };
 
 export function getCampaignText(key: CampaignLocaleKey, language = "en") {

@@ -291,11 +291,11 @@ export default function CampaignPanel({
               </div>
               <div className="crm-steps-flow">
                 {[
-                  { step: "01", title: "SELECT", desc: "30 professional salons selected across territory" },
-                  { step: "02", title: "ACTIVATE", desc: "Target 150 Home Care units per salon in 30 days" },
-                  { step: "03", title: "COMPETE", desc: "Stylists compete individually for verified sell-out" },
-                  { step: "04", title: "REWARD", desc: "Three highest performers rewarded per qualifying salon" },
-                  { step: "05", title: "REPLENISH", desc: "Consumer sales drive immediate replenishment orders" },
+                  { step: "01", title: ct("step_select"), desc: ct("step_select_desc") },
+                  { step: "02", title: ct("step_activate"), desc: ct("step_activate_desc") },
+                  { step: "03", title: ct("step_compete"), desc: ct("step_compete_desc") },
+                  { step: "04", title: ct("step_reward"), desc: ct("step_reward_desc") },
+                  { step: "05", title: ct("step_replenish"), desc: ct("step_replenish_desc") },
                 ].map((s) => (
                   <div key={s.step} className="crm-step-item">
                     <div className="crm-step-number">{s.step}</div>
