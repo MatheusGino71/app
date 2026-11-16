@@ -1,6 +1,7 @@
 import { createHash, randomBytes, randomUUID, scryptSync, timingSafeEqual } from "node:crypto";
 import { resolve } from "node:path";
 import { openDatabase, type Row, type SQL } from "./database";
+import { parseCampaignEntry, type CampaignEntry } from "../campaigns";
 import { actionFromVisit, emptyDiagnostic, makeVisit, parseDiagnostic, parseDraft, parseSalon, validDate, type CommercialAction, type Draft, type OnboardingProfile, type PurchaseReview, type Role, type Salon, type User, type Visit, type WorkspaceData } from "../domain";
 export class AppError extends Error { constructor(message: string, public status = 400) { super(message); } }
 const hash = (v: string) => createHash("sha256").update(v).digest("hex");
@@ -34,6 +35,7 @@ export async function createStore(path: string, authToken?: string) {
     CREATE TABLE IF NOT EXISTS purchase_reviews (id TEXT PRIMARY KEY, salon_id TEXT NOT NULL REFERENCES salons(id), visit_id TEXT NOT NULL UNIQUE REFERENCES visits(id), status TEXT NOT NULL, data TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS audit (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), event TEXT NOT NULL, entity_id TEXT NOT NULL, created_at TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS evidence_files (id TEXT PRIMARY KEY, salon_id TEXT NOT NULL REFERENCES salons(id), user_id TEXT NOT NULL REFERENCES users(id), name TEXT NOT NULL, mime TEXT NOT NULL, content TEXT NOT NULL, created_at TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS campaign_entries (campaign_id TEXT NOT NULL, salon_id TEXT NOT NULL REFERENCES salons(id), version INTEGER NOT NULL, data TEXT NOT NULL, PRIMARY KEY(campaign_id,salon_id));
     CREATE INDEX IF NOT EXISTS visits_salon ON visits(salon_id, created_at);
     CREATE INDEX IF NOT EXISTS salons_owner ON salons(owner_id);
     CREATE INDEX IF NOT EXISTS reviews_status ON purchase_reviews(status);`);
@@ -112,7 +114,20 @@ export async function createStore(path: string, authToken?: string) {
       const actions = (await db.all("SELECT a.* FROM actions a JOIN salons s ON s.id=a.salon_id WHERE (?<>'comercial' OR s.owner_id=?) ORDER BY a.rowid DESC", user.role, user.id)).map(r => json<CommercialAction>(r));
       const reviews = (await db.all("SELECT r.* FROM purchase_reviews r JOIN salons s ON s.id=r.salon_id WHERE (?<>'comercial' OR s.owner_id=?) ORDER BY r.rowid DESC", user.role, user.id)).map(r => json<PurchaseReview>(r));
       const users = (await db.all(USER_SELECT + " WHERE c.user_id IS NULL ORDER BY u.name")).map(safeUser);
-      return { salons, visits, actions, reviews, users: user.role === "comercial" ? [user] : users, draft: await draftFor(user) };
+      const campaignEntries = (await db.all("SELECT c.* FROM campaign_entries c JOIN salons s ON s.id=c.salon_id WHERE (?<>'comercial' OR s.owner_id=?) ORDER BY c.campaign_id,c.salon_id", user.role, user.id)).map(r => json<CampaignEntry>(r));
+      return { salons, visits, actions, reviews, campaignEntries, users: user.role === "comercial" ? [user] : users, draft: await draftFor(user) };
+    },
+    async saveCampaignEntry(user: User, input: unknown) {
+      requireStaff(user); const entry = parseCampaignEntry(input);
+      return db.transaction(async q => {
+        await salonFor(user, entry.salonId, q);
+        const previous = await q.get("SELECT version FROM campaign_entries WHERE campaign_id=? AND salon_id=?", entry.campaignId, entry.salonId);
+        if (Number(previous?.version ?? 0) !== entry.version) throw new AppError("Cadastro alterado. Atualize a página.", 409);
+        const saved: CampaignEntry = { ...entry, version: entry.version + 1, updatedAt: new Date().toISOString(), updatedBy: user.id };
+        await q.run("INSERT INTO campaign_entries VALUES (?,?,?,?) ON CONFLICT(campaign_id,salon_id) DO UPDATE SET version=excluded.version,data=excluded.data", saved.campaignId, saved.salonId, saved.version, JSON.stringify(saved));
+        await audit(q, user, "campaign.participation.updated", saved.campaignId + ":" + saved.salonId);
+        return saved;
+      });
     },
     async saveVisit(user: User, input: unknown, onboarding = false) {
       if (!onboarding) requireStaff(user); const v = record(input); const fields = parseSalon(v.salon); const diagnostic = parseDiagnostic(onboarding ? { ...record(v.diagnostic), source: "Informado pelo responsável do salão", assessments: emptyDiagnostic().assessments } : v.diagnostic); if (onboarding && diagnostic.annualPurchase === null) throw new AppError("Informe a compra líquida nos últimos 12 meses. Se não houve compras, informe zero."); const salonId = text(v.salonId ?? "", 100);
@@ -156,5 +171,5 @@ export async function createStore(path: string, authToken?: string) {
   };
 }
 type Store = Awaited<ReturnType<typeof createStore>>;
-const shared = globalThis as unknown as { atelierStoreV3?: Promise<Store> };
-export function getStore(): Promise<Store> { return shared.atelierStoreV3 ??= createStore(process.env.TURSO_DATABASE_URL || process.env.ATELIER_DATABASE_PATH || resolve(process.cwd(), ".data", "atelier.sqlite"), process.env.TURSO_AUTH_TOKEN).catch(e => { delete shared.atelierStoreV3; throw e; }); }
+const shared = globalThis as unknown as { graceProStoreV1?: Promise<Store>; atelierStoreV3?: Promise<Store> };
+export function getStore(): Promise<Store> { return shared.graceProStoreV1 ??= shared.atelierStoreV3 ??= createStore(process.env.TURSO_DATABASE_URL || process.env.GRACE_PRO_DATABASE_PATH || process.env.ATELIER_DATABASE_PATH || resolve(process.cwd(), ".data", "atelier.sqlite"), process.env.TURSO_AUTH_TOKEN).catch(e => { delete shared.graceProStoreV1; delete shared.atelierStoreV3; throw e; }); }

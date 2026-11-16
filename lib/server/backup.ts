@@ -1,6 +1,6 @@
 import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 import type { Database, Row } from "./database";
-export const BACKUP_TABLES = ["users","customer_accounts","email_status","salons","visits","actions","drafts","account_profiles","purchase_reviews","audit","evidence_files"] as const;
+export const BACKUP_TABLES = ["users","customer_accounts","email_status","salons","visits","actions","drafts","account_profiles","purchase_reviews","audit","evidence_files","campaign_entries"] as const;
 type Snapshot={version:1;createdAt:string;tables:Record<string,Row[]>};
 export async function snapshotDatabase(db:Database):Promise<Snapshot>{return db.transaction(async q=>{const tables:Record<string,Row[]>={};for(const table of BACKUP_TABLES)tables[table]=await q.all(`SELECT * FROM ${table}`);return {version:1,createdAt:new Date().toISOString(),tables};});}
 function key(value:string){if(!/^[a-f0-9]{64}$/i.test(value))throw new Error("ATELIER_BACKUP_KEY deve conter 64 caracteres hexadecimais.");return Buffer.from(value,"hex");}

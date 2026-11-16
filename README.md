@@ -1,6 +1,6 @@
-﻿# ATELIER — Operação Grace Pro
+# GRACE PRO — Inteligência Comercial
 
-Aplicação Next.js para o time comercial interno da Grace Pro, com painel de carteiras, diagnóstico Deep Test e classificação comercial dos salões. O acesso exige conta da equipe; o cadastro público de clientes está desativado.
+Aplicação Next.js para o time comercial interno da Grace Pro, com painel de carteiras, diagnóstico Deep Test, painel de campanhas e eventos, e classificação comercial dos salões. O acesso exige conta da equipe; o cadastro público de clientes está desativado.
 
 O idioma padrão da interface é inglês. O acesso e o cadastro incluem seleção de idioma com busca e bandeiras; a troca é feita somente pelo seletor e fica salva para acompanhar o diagnóstico e os níveis. Consulte [idiomas da interface](docs/idiomas.md) para os catálogos locais, ajustes de tradução e manutenção.
 

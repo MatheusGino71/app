@@ -1,5 +1,5 @@
 import { emptyDiagnostic, emptySalon, parseDraft, type Draft, type OnboardingProfile, type User } from "./domain";
-export const ONBOARDING_DEMO_KEY = "atelier-personal-demo-v1";
+export const ONBOARDING_DEMO_KEY = "grace-pro-personal-demo-v1";
 export function initialOnboardingDraft(user: User, profile: OnboardingProfile | null, saved: Draft | null): Draft {
   if (saved && (saved.salonId === "" && !profile || saved.salonId === profile?.salon.id)) return parseDraft(saved);
   const diagnostic = profile ? structuredClone(profile.visit.diagnostic) : emptyDiagnostic();

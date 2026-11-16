@@ -43,7 +43,7 @@ export default function OnboardingFlow({ demo, user, profile, savedDraft, fresh 
     setNotice("Rascunho salvo. Você pode continuar agora ou retomar ao acessar sua conta.");
   }
   return <main className="crm crm-journey">
-    <header className="journey-header"><LanguageSelector/><Link className="crm-brand" href="/">{t("ATELIER")}<span>.</span></Link><span>{t("GRACE PRO")} <i /> {t("CONHECER PARA CRESCER")}</span><Link href={demo || user.role === "cliente" ? "/entrar" : "/workspace"}>{demo || user.role === "cliente" ? t("Voltar ao acesso") : t("Meu workspace")}<ArrowRight size={15} /></Link></header>
+    <header className="journey-header"><LanguageSelector/><Link className="crm-brand" href="/">{t("GRACE PRO")}<span>.</span></Link><span>{t("GRACE PRO")} <i /> {t("CONHECER PARA CRESCER")}</span><Link href={demo || user.role === "cliente" ? "/entrar" : "/workspace"}>{demo || user.role === "cliente" ? t("Voltar ao acesso") : t("Meu workspace")}<ArrowRight size={15} /></Link></header>
     <div className="journey-content"><div className="journey-breadcrumb" aria-label={t("Progresso do cadastro")}><span className="complete"><Check size={13} />{demo ? t("Demonstração") : t("Conta criada")}</span><i /><span className="current">{t("02 · Seu salão")}</span><i /><span>{t("03 · Seu nível")}</span></div>
       {fresh && <p className="journey-welcome">{demo ? t("Experimente o caminho completo com dados fictícios.") : t("Bem-vindo, {v0}. Sua conta está pronta; agora é a vez do seu salão.", { v0: user.name.split(" ")[0] })}</p>}
       {!demo && user.role === "cliente" && <EmailStatus verified={user.emailVerified}/>}

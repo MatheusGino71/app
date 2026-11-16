@@ -4,7 +4,7 @@ import LanguageProvider from "./components/i18n/language-provider";
 import "./components/i18n/language.css";
 
 export const metadata: Metadata = {
-  title: "ATELIER. — Commercial Intelligence",
+  title: "GRACE PRO — Commercial Intelligence",
   description: "Understand your clients, discover their profiles and turn insights into business opportunities.",
   icons: {
     icon: "/favicon.svg",

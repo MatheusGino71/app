@@ -5,7 +5,7 @@ export type Language = { code: string; name: string; native: string; country: st
 export type Messages = Record<string, string>;
 export const LANGUAGES = (languages as Language[]).filter(language => availableCatalogs.includes(language.catalog));
 export const DEFAULT_LANGUAGE = "en";
-export const LANGUAGE_STORAGE_KEY = "atelier-language-v1";
+export const LANGUAGE_STORAGE_KEY = "grace-pro-language-v1";
 export const CATALOG_VERSION = "2026-11-15-1";
 
 export function languageFor(code: string | null | undefined) {

@@ -43,7 +43,7 @@ export type Diagnostic = {
 export type Visit = { id: string; salonId: string; createdAt: string; authorId: string; author: string; ruleVersion: string; diagnostic: Diagnostic; category: Category; kind: "visit" | "import" };
 export type CommercialAction = { id: string; salonId: string; visitId: string; title: string; responsible: string; due: string; status: "pending" | "done"; result: string; completedAt: string | null; version: number };
 export type Draft = { salonId: string; version: number; salon: SalonFields; diagnostic: Diagnostic; step: number };
-export type WorkspaceData = { salons: Salon[]; visits: Visit[]; actions: CommercialAction[]; users: User[]; draft: Draft | null; reviews?: PurchaseReview[] };
+export type WorkspaceData = { salons: Salon[]; visits: Visit[]; actions: CommercialAction[]; users: User[]; draft: Draft | null; reviews?: PurchaseReview[]; campaignEntries?: import("./campaigns").CampaignEntry[] };
 export type OnboardingProfile = { salon: Salon; visit: Visit; review?: PurchaseReview | null; official?: PurchaseReview | null };
 export function profileLevel(profile: OnboardingProfile) {
   const purchase = profile.official ?? (profile.review?.status === "approved" ? profile.review : null);

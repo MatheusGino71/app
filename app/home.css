@@ -1,5 +1,5 @@
 /* The home is a single camera scene, ending in the mounted account form. */
-.atelier-entry { background: #f5f5f0; color: #263d30; }
+.grace-pro-entry { background: #f5f5f0; color: #263d30; }
 .entry-portal [data-gp-caption] { left: 8%; right: 8%; bottom: 8%; font-size: 11px; letter-spacing: .03em; }
 .entry-portal [data-gp-hint] { color: #64765b; font-size: 10px; }
 .entry-portal [data-gp-enter] { min-height: 44px; gap: 25px; }

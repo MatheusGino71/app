@@ -13,7 +13,7 @@ export function Modal({ title, subtitle, children, onClose, wide = false }: { ti
   const { t } = useI18n();
   const ref = useRef<HTMLDialogElement>(null); const close = useRef(onClose); close.current = onClose;
   useEffect(() => { const dialog = ref.current; dialog?.showModal(); const old = document.body.style.overflow; document.body.style.overflow = "hidden"; return () => { dialog?.close(); document.body.style.overflow = old; }; }, []);
-  return <dialog ref={ref} className={`crm-dialog ${wide ? "wide" : ""}`} onCancel={e => { e.preventDefault(); close.current(); }} aria-labelledby="crm-dialog-title"><header><div><span className="crm-overline">{t("ATELIER / GRACE PRO")}</span><h2 id="crm-dialog-title">{t(title)}</h2>{subtitle && <p>{t(subtitle)}</p>}</div><button className="crm-icon" onClick={onClose} aria-label={t("Fechar")}><X size={21} /></button></header>{children}</dialog>;
+  return <dialog ref={ref} className={`crm-dialog ${wide ? "wide" : ""}`} onCancel={e => { e.preventDefault(); close.current(); }} aria-labelledby="crm-dialog-title"><header><div><span className="crm-overline">{t("GRACE PRO")}</span><h2 id="crm-dialog-title">{t(title)}</h2>{subtitle && <p>{t(subtitle)}</p>}</div><button className="crm-icon" onClick={onClose} aria-label={t("Fechar")}><X size={21} /></button></header>{children}</dialog>;
 }
 export function FormFrame({ standalone, ...props }: { standalone: boolean; title: string; subtitle: string; children: ReactNode; onClose: () => void; wide: boolean }) {
   const { t } = useI18n();

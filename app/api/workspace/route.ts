@@ -16,6 +16,7 @@ export async function POST(request: Request) {
     if (input.action !== "draft" && input.action !== "clearDraft") requireStaff(user);
     switch (input.action) {
       case "visit": result = await store.saveVisit(user, input.payload); break;
+      case "campaign": result = await store.saveCampaignEntry(user, input.payload); break;
       case "draft": await store.saveDraft(user, input.payload); break;
       case "clearDraft": await store.clearDraft(user); break;
       case "agreement": await store.updateAction(user, input.payload); break;

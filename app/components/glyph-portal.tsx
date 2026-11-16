@@ -425,7 +425,7 @@ export default function GlyphPortal({
         @media(prefers-reduced-motion:reduce){${q}[data-gp-immersive=true] [data-gp-content]{transform:none;}}
       `}</style>
       {/* Keep a readable poster until measured geometry is available, including without JS. */}
-      <noscript><style>{`${q} [data-gp-fallback]{display:grid}${q} [data-gp-hint]{display:none}`}</style>{immersive && <a href="/entrar" style={{position:"absolute",left:"8%",top:"80vh",zIndex:5}}>Entrar no Atelier ↗</a>}</noscript>
+      <noscript><style>{`${q} [data-gp-fallback]{display:grid}${q} [data-gp-hint]{display:none}`}</style>{immersive && <a href="/entrar" style={{position:"absolute",left:"8%",top:"80vh",zIndex:5}}>Entrar no Grace Pro ↗</a>}</noscript>
       <div data-gp-viewport aria-hidden="true" />
       <div data-gp-pin>
         <div data-gp-field aria-hidden="true" inert>

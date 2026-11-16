@@ -1,8 +1,8 @@
 {
-  "name": "atelier-inteligencia-comercial",
+  "name": "grace-pro",
   "version": "0.1.0",
   "private": true,
-  "description": "Protótipo de inteligência comercial para equipes em campo.",
+  "description": "Grace Pro — Commercial intelligence for professional salon teams.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

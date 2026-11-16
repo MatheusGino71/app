@@ -1,5 +1,5 @@
 import { actionFromVisit, emptyDiagnostic, makeVisit, type Diagnostic, type Salon, type User, type WorkspaceData } from "./domain";
-export const DEMO_USER: User = { id: "demo", name: "Matheus", email: "demo@atelier.local", role: "admin" };
+export const DEMO_USER: User = { id: "demo", name: "Matheus", email: "demo@gracepro.local", role: "admin" };
 export function createDemoData(): WorkspaceData {
   const names = [["Pied de Poule", "Olena Kovalenko", "Varsóvia", "Polônia", "pied.de.poule"], ["Studio Aurora", "Anna Nowak", "Cracóvia", "Polônia", "studio.aurora"], ["Maison Lumière", "Sofia Martins", "Lisboa", "Portugal", "maison.lumiere"], ["Casa Alma", "Marta Silva", "Porto", "Portugal", "casa.alma"]];
   const salons: Salon[] = names.map(([name, contact, city, country, instagram], i) => ({ id: `demo-s${i}`, name, contact, city, country, instagram, nationality: i < 2 ? "Ucraniana" : "Portuguesa", language: i < 2 ? "Polonês" : "Português", environment: i === 3 ? "Bairro" : "Centro", ownerId: "demo", createdAt: "2026-10-01T12:00:00Z", version: i === 0 ? 2 : 1 }));

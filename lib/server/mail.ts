@@ -7,8 +7,8 @@ export async function sendAccountMail(to: string, code: string, purpose: "verify
   if (!mailAvailable()) throw new Error("O envio de e-mail ainda não está configurado no servidor.");
   const origin = process.env.ATELIER_APP_ORIGIN || "http://localhost:3000";
   const url = new URL(purpose === "verify" ? "/confirmar-email" : "/recuperar", origin); url.searchParams.set("token", code);
-  const subject = purpose === "verify" ? "Verify your email for ATELIER" : "Recover your ATELIER account";
-  const text = `${subject}\n\nOpen ${url.toString()}\n\n${purpose === "verify" ? "This link is valid for 24 hours." : "This link is valid for one hour and can only be used once."}\nIf you did not request this message, please ignore this email.\n\nATELIER · Grace Pro`;
+  const subject = purpose === "verify" ? "Verify your email for GRACE PRO" : "Recover your GRACE PRO account";
+  const text = `${subject}\n\nOpen ${url.toString()}\n\n${purpose === "verify" ? "This link is valid for 24 hours." : "This link is valid for one hour and can only be used once."}\nIf you did not request this message, please ignore this email.\n\nGRACE PRO`;
   if (mailTransport() === "file" && !process.env.VERCEL) {
     const folder = resolve(/* turbopackIgnore: true */ process.env.ATELIER_MAIL_OUTBOX || ".data/mail"); await mkdir(folder, { recursive: true });
     await writeFile(join(folder, randomUUID() + ".json"), JSON.stringify({ to, subject, text }, null, 2), { mode: 0o600 }); return "local";
