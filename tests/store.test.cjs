@@ -18,6 +18,25 @@ async function setup(path = ":memory:") {
  return {store,admin,sales,customer};
 }
 function payload(name="Salao de teste"){const diagnostic=emptyDiagnostic();diagnostic.annualPurchase=400;diagnostic.source="Relatorio de testes";return {salonId:"",version:0,step:6,salon:{...emptySalon(),name,contact:"Decisor",country:"Polonia",city:"Varsovia"},diagnostic};}
+
+test("campanhas preservam isolamento de carteira, versao e registros independentes", async () => {
+ const { store, admin, sales, customer } = await setup();
+ try {
+  const { salonId } = await store.saveVisit(admin, payload());
+  const participation = { campaignId: "salon-sales", salonId, version: 0, status: "planned", startDate: "2026-11-16", packages: 0, professionals: [{ name: "Alice", units: 35 }], note: "", orderReference: "" };
+  await assert.rejects(() => store.saveCampaignEntry(sales, participation), /carteira/);
+  await assert.rejects(() => store.saveCampaignEntry(customer, participation), /equipe/);
+  const saved = await store.saveCampaignEntry(admin, participation);
+  assert.equal(saved.version, 1);
+  await assert.rejects(() => store.saveCampaignEntry(admin, participation), /Atualize/);
+  await store.saveCampaignEntry(admin, { ...participation, version: 1, status: "confirmed", professionals: [{ name: "Alice", units: 75 }] });
+  await store.saveCampaignEntry(admin, { ...participation, campaignId: "brae-12-12", packages: 2, professionals: [], orderReference: "PO-42" });
+  const entries = (await store.snapshot(admin)).campaignEntries;
+  assert.equal(entries.length, 2);
+  assert.equal(entries.find(entry => entry.campaignId === "salon-sales").professionals[0].units, 75);
+  assert.equal((await store.snapshot(sales)).campaignEntries.length, 0);
+ } finally { store.close(); }
+});
 test("cadastro publico nunca concede papel interno, inclusive na primeira conta",async()=>{
  const store=await createStore(":memory:");try{const user=await store.signup({name:"Cliente",email:"first@example.test",password,role:"admin"});assert.equal(user.role,"cliente");assert.equal(await store.hasAdmins(),false);await assert.rejects(()=>store.signup({kind:"staff",name:"Intruso",email:"staff@example.test",password,code:"errado"}),/configura/);await assert.rejects(()=>store.snapshot(user),/equipe/);}finally{store.close();}
 });

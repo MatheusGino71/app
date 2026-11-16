@@ -9,11 +9,11 @@ export function Stars({ score }: { score: number | null }) {
   const { t } = useI18n();
   return <span className="crm-stars" aria-label={score === null ? t("Não avaliado") : t("{v0} de 5 estrelas", { v0: score })}>{score === null ? <span className="crm-muted">{t("Não avaliado")}</span> : <>{[1, 2, 3, 4, 5].map(n => <Star key={n} size={17} aria-hidden="true" fill={n <= score ? "currentColor" : "none"} className={n <= score ? "" : "empty"} />)}<small>{score}/5</small></>}</span>;
 }
-export function Modal({ title, subtitle, children, onClose, wide = false }: { title: string; subtitle?: string; children: ReactNode; onClose: () => void; wide?: boolean }) {
+export function Modal({ title, subtitle, children, onClose, wide = false, className = "" }: { title: string; subtitle?: string; children: ReactNode; onClose: () => void; wide?: boolean; className?: string }) {
   const { t } = useI18n();
   const ref = useRef<HTMLDialogElement>(null); const close = useRef(onClose); close.current = onClose;
   useEffect(() => { const dialog = ref.current; dialog?.showModal(); const old = document.body.style.overflow; document.body.style.overflow = "hidden"; return () => { dialog?.close(); document.body.style.overflow = old; }; }, []);
-  return <dialog ref={ref} className={`crm-dialog ${wide ? "wide" : ""}`} onCancel={e => { e.preventDefault(); close.current(); }} aria-labelledby="crm-dialog-title"><header><div><span className="crm-overline">{t("GRACE PRO")}</span><h2 id="crm-dialog-title">{t(title)}</h2>{subtitle && <p>{t(subtitle)}</p>}</div><button className="crm-icon" onClick={onClose} aria-label={t("Fechar")}><X size={21} /></button></header>{children}</dialog>;
+  return <dialog ref={ref} className={`crm-dialog ${wide ? "wide" : ""} ${className}`} onCancel={e => { e.preventDefault(); close.current(); }} aria-labelledby="crm-dialog-title"><header><div><span className="crm-overline">{t("GRACE PRO")}</span><h2 id="crm-dialog-title">{t(title)}</h2>{subtitle && <p>{t(subtitle)}</p>}</div><button className="crm-icon" onClick={onClose} aria-label={t("Fechar")}><X size={21} /></button></header>{children}</dialog>;
 }
 export function FormFrame({ standalone, ...props }: { standalone: boolean; title: string; subtitle: string; children: ReactNode; onClose: () => void; wide: boolean }) {
   const { t } = useI18n();

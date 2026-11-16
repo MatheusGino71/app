@@ -5,21 +5,24 @@ const path = require("node:path");
 const crypto = require("node:crypto");
 const root = path.resolve(__dirname, "..");
 const languages = require("../lib/i18n/languages.json");
+const publishedCatalogs = require("../lib/i18n/available.json");
 const models = require("../lib/i18n/models.json");
 const base = { ...require("../public/locales/en.json"), ...require("../lib/i18n/english-overrides.json") };
 const localeDirectory = path.join(root, "public", "locales");
 const cacheDirectory = path.join(root, ".data");
+const fallbackFile = path.join(root, "lib", "i18n", "fallbacks.json");
+const pendingFallbacks = readJSON(fallbackFile);
 const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
-const protectedCopy = /(\{\w+\}|\b(?:ATELIER|Grace Pro|Deep Test|ORIGIN|SIGNATURE|ICON)\b|salao_id;compra_eur;pedidos;data_corte;fonte)/g;
+const protectedCopy = /(\{\w+\}|\b(?:ATELIER|Grace Pro|GRACE PRO|Deep Test|ORIGIN|SIGNATURE|ICON|BRAÉ|Braé|The Icons Edit|Home Care|Wanna Be Blonde|Revival Oil|OX|SKU)\b|salao_id;compra_eur;pedidos;data_corte;fonte)/g;
 const segmentsOf = text => text.split(protectedCopy).filter((part, index) => index % 2 === 0 && /\p{L}/u.test(part)).map(part => part.trim());
 const segments = [...new Set(Object.values(base).flatMap(segmentsOf))];
 const partKeys = new Map(segments.map((segment, index) => [segment, `m${index}`]));
-const version = crypto.createHash("sha256").update(JSON.stringify(base)).digest("hex").slice(0, 12);
+const version = crypto.createHash("sha256").update(JSON.stringify(base) + protectedCopy.source).digest("hex").slice(0, 12);
 const argumentsList = process.argv.slice(2);
 const force = argumentsList.includes("--force");
 const requested = argumentsList.filter(argument => !argument.startsWith("--"));
 // Experimental models require an explicitly requested language and editorial review.
-const targets = [...new Set(languages.map(language => language.catalog))].filter(code => !["en", "pt-BR", "pt-PT"].includes(code) && (requested.length ? requested.includes(code) : models[code] !== "madlad-400"));
+const targets = [...new Set(languages.map(language => language.catalog))].filter(code => !["en", "pt-BR", "pt-PT"].includes(code) && (requested.length ? requested.includes(code) : publishedCatalogs.includes(code) && models[code] !== "madlad-400"));
 const errors = [];
 let finished = 0;
 
@@ -68,7 +71,7 @@ async function translateBatch(code, batch, index, total) {
       const output = JSON.parse(result.translation);
       if (!output || typeof output !== "object" || Array.isArray(output)) throw new Error("Invalid translation response");
       for (const [key, original] of batch) {
-        if (typeof output[key] !== "string" || !output[key].trim()) { output[key] = original; console.warn(`${code}: English fallback for ${key}`); }
+        if (typeof output[key] !== "string" || !output[key].trim()) throw new Error(`Missing translation: ${key}`);
       }
       return output;
     } catch (error) {
@@ -81,11 +84,11 @@ async function translateBatch(code, batch, index, total) {
 async function translateLanguage(code) {
   const start = Date.now();
   const existing = readJSON(path.join(localeDirectory, `${code}.json`));
-  const missing = Object.entries(base).filter(([source]) => force || typeof existing[source] !== "string" || !existing[source].trim());
+  const missing = Object.entries(base).filter(([source]) => force || typeof existing[source] !== "string" || !existing[source].trim() || pendingFallbacks[code]?.includes(source));
   if (!missing.length) { publishCatalog(code, existing); finished++; return; }
   const needed = new Set(missing.flatMap(([, english]) => segmentsOf(english)));
   const entries = [...partKeys].filter(([text]) => needed.has(text)).map(([text, key]) => [key, text]);
-  const batches = createBatches(entries, models[code] === "nllb200-600M" ? 9000 : 1500);
+  const batches = createBatches(entries, argumentsList.includes("--small-batches") ? 2500 : models[code] === "nllb200-600M" ? 9000 : 1500);
   const cacheFile = path.join(cacheDirectory, `translation-${code}-${version}.json`);
   const translated = readJSON(cacheFile);
   for (const [index, batch] of batches.entries()) {
@@ -104,6 +107,8 @@ async function translateLanguage(code) {
     }).join("");
   }
   publishCatalog(code, catalog);
+  delete pendingFallbacks[code];
+  writeJSON(fallbackFile, pendingFallbacks);
   finished++;
   console.log(`${code}: ${missing.length} messages updated, ${Math.round((Date.now() - start) / 1000)}s (${finished}/${targets.length})`);
 }

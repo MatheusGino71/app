@@ -1,5 +1,18 @@
 {
   "Invitation for {email}: {code}\nExpires in: {expires}. Share the code through your team's channel.": "Convite para {email}: {code}\nValidade: {expires}. Partilhe o código pelo canal da sua equipa.",
   "Recovery for {email}: {code}\nExpires in: {expires}. Use it on the account recovery screen.": "Recuperação para {email}: {code}\nValidade: {expires}. Use no ecrã de recuperação de acesso.",
-  "Customer": "Cliente"
+  "Customer": "Cliente",
+  "Invalid campaign record.": "Registro de campanha inválido.",
+  "Use non-negative whole quantities.": "Use quantidades inteiras maiores ou iguais a zero.",
+  "Campaign not found.": "Campanha não encontrada.",
+  "Select a salon.": "Selecione um salão.",
+  "Invalid participation status.": "Status de participação inválido.",
+  "Invalid start date.": "Data de início inválida.",
+  "Invalid professional list.": "Lista de profissionais inválida.",
+  "Enter each professional's name.": "Informe o nome de cada profissional, com pelo menos 2 caracteres.",
+  "Professional names must be unique within the salon.": "Não repita nomes de profissionais na mesma inscrição.",
+  "Professional sales belong to the salon competition.": "Vendas de profissionais pertencem à competição de salões.",
+  "The competition tracks individual units, not packages.": "A competição registra unidades individuais, e não pacotes.",
+  "Add the order reference for recorded packages.": "Adicione a referência do pedido para os pacotes registrados.",
+  "Failed to fetch": "Não foi possível conectar ao servidor. Tente novamente."
 }

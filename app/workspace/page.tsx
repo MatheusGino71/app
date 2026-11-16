@@ -4,6 +4,7 @@ import { getStore } from "../../lib/server/store";
 import { createDemoData, DEMO_USER } from "../../lib/demo";
 import Workspace from "../components/crm/workspace";
 import "./workspace.css";
+import "./campaigns.css";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export default async function WorkspacePage({ searchParams }: { searchParams: Promise<{ demo?: string }> }) {

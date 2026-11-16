@@ -6,7 +6,7 @@ export type Messages = Record<string, string>;
 export const LANGUAGES = (languages as Language[]).filter(language => availableCatalogs.includes(language.catalog));
 export const DEFAULT_LANGUAGE = "en";
 export const LANGUAGE_STORAGE_KEY = "grace-pro-language-v1";
-export const CATALOG_VERSION = "2026-11-15-1";
+export const CATALOG_VERSION = "2026-11-16-2";
 
 export function languageFor(code: string | null | undefined) {
   return LANGUAGES.find(language => language.code === code);

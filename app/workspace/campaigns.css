@@ -1,0 +1,261 @@
+.crm-campaigns {
+  --campaign-forest: #233e32;
+  --campaign-sage: #eaf0e7;
+  --campaign-sand: #f5efe2;
+  --campaign-gold: #866330;
+  display: grid;
+  gap: 24px;
+}
+.crm-campaign-hero { position: relative; overflow: hidden; padding: 36px; border: 1px solid #d8dfd3; border-radius: 18px; background: #eef1e9; }
+.crm-campaign-hero-content { position: relative; z-index: 1; }
+.crm-campaign-hero::after { content: ""; position: absolute; inset-block-start: -115px; inset-inline-end: -90px; width: 360px; height: 360px; border: 1px solid #ccd7c5; border-radius: 50%; box-shadow: 0 0 0 36px #e5ebdf, 0 0 0 37px #ccd7c5, 0 0 0 75px #e5ebdf; opacity: .65; pointer-events: none; }
+.crm-campaign-badge { display: inline-flex; align-items: center; gap: 8px; color: var(--campaign-forest); font-size: 10px; font-weight: 700; letter-spacing: 1.8px; }
+.crm-campaign-hero h2 { max-width: 700px; margin: 15px 0 12px; font: 400 clamp(32px, 3.7vw, 52px)/1.1 Georgia, serif; letter-spacing: -1.8px; color: var(--campaign-forest); }
+.crm-campaign-hero p { max-width: 530px; margin: 0; font-size: 14px; line-height: 1.7; color: #53604e; }
+.crm-campaign-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 30px; }
+.crm-campaign-tab-btn { position: relative; min-width: 0; display: flex; flex-direction: column; gap: 15px; padding: 21px; border: 1px solid #d0d9c9; border-radius: 12px; text-align: start; background: #ffffffd9; color: var(--campaign-forest); cursor: pointer; transition: background .2s, border-color .2s, box-shadow .2s; }
+.crm-campaign-tab-btn:hover { border-color: #789071; background: #fff; }
+.crm-campaign-tab-btn.active { background: var(--campaign-forest); border-color: var(--campaign-forest); color: #fff; box-shadow: 0 8px 16px #233e321a; }
+.crm-tab-top, .crm-tab-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.crm-tab-brand { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; }
+.crm-tab-duration { padding: 4px 8px; background: #edf1e9; color: #4c5e46; border-radius: 5px; font-size: 10px; }
+.crm-campaign-tab-btn.active .crm-tab-duration { background: #ffffff17; color: #e1ebda; }
+.crm-campaign-tab-btn strong { max-width: 230px; font: 400 23px/1.2 Georgia, serif; }
+.crm-tab-foot { margin-top: auto; padding-top: 12px; border-top: 1px solid #d0d9c9; font-size: 12px; }
+.crm-campaign-tab-btn.active .crm-tab-foot { border-color: #ffffff36; color: #d4dfcf; }
+.crm-campaign-body { display: grid; gap: 22px; min-width: 0; }
+.crm-campaigns .crm-card { min-width: 0; padding: 26px; border-radius: 14px; box-shadow: 0 3px 14px #23302304; }
+.crm-campaigns .crm-card-head { padding: 0; margin-bottom: 22px; border: 0; }
+.crm-campaigns .crm-card-head h3 { font: 400 25px/1.2 Georgia, serif; margin-top: 7px; }
+.crm-campaigns .crm-overline { font-size: 10px; line-height: 1.5; letter-spacing: 1.4px; }
+.crm-campaign-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--crm-border); border-radius: 12px; background: var(--crm-surface); }
+.crm-campaign-metrics article { display: flex; align-items: center; gap: 17px; padding: 22px 26px; }
+.crm-campaign-metrics article + article { border-inline-start: 1px solid var(--crm-border); }
+.crm-campaign-metrics svg { flex-shrink: 0; color: var(--crm-green); }
+.crm-campaign-metrics span { display: block; font-size: 12px; color: var(--crm-muted); }
+.crm-campaign-metrics strong { display: block; font-size: 28px; font-weight: 500; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.crm-campaign-header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 22px; }
+.crm-campaign-header-row > div { min-width: 0; }
+.crm-campaign-header-row > .crm-btn { flex-shrink: 0; }
+.crm-campaign-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 13px; }
+.crm-tag { display: inline-flex; align-items: center; gap: 5px; padding: 5px 9px; border-radius: 5px; font-size: 10px; font-weight: 600; }
+.crm-tag.brand { background: var(--campaign-sand, #f5efe2); color: #78572c; }
+.crm-tag.duration { background: var(--campaign-sage); color: var(--campaign-forest); }
+.crm-campaign-title { font: 400 32px/1.2 Georgia, serif; letter-spacing: -.8px; margin: 0 0 9px; }
+.crm-campaign-subtitle { color: var(--crm-muted); font-size: 14px; line-height: 1.7; margin: 0; max-width: 720px; }
+.crm-campaign-mechanic-box { margin-top: 24px; padding: 19px 22px; border-inline-start: 3px solid #93a789; border-radius: 0 8px 8px 0; background: #f6f8f3; font-size: 13px; line-height: 1.8; }
+.crm-campaign-mechanic-box > strong { color: var(--crm-green); }
+.crm-campaign-mechanic-box p { margin: 4px 0 0; }
+.crm-campaign-conditions { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--crm-border); }
+.crm-campaign-conditions summary { width: fit-content; cursor: pointer; color: var(--crm-green); font-size: 12px; font-weight: 600; }
+.crm-campaign-conditions small { display: block; margin-top: 9px; font-size: 12px; line-height: 1.7; color: var(--crm-muted); }
+.crm-campaign-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.crm-campaign-playbook { min-width: 0; border: 1px solid var(--crm-border); border-radius: 14px; background: var(--crm-surface); }
+.crm-campaign-playbook > summary { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 22px 26px; cursor: pointer; list-style: none; color: var(--crm-green); font-size: 14px; font-weight: 600; }
+.crm-campaign-playbook > summary::-webkit-details-marker { display: none; }
+.crm-campaign-playbook > summary > span { display: flex; align-items: center; gap: 10px; }
+.crm-campaign-playbook[open] > summary { border-bottom: 1px solid var(--crm-border); }
+.crm-campaign-playbook[open] > summary > svg { transform: rotate(45deg); }
+.crm-campaign-playbook > .crm-campaign-grid-2 { padding: 22px; }
+.crm-campaign-playbook .crm-card { border: 0; box-shadow: none; padding: 8px; }
+.crm-steps-flow { display: grid; gap: 0; margin: 10px 0 25px; }
+.crm-step-item { position: relative; display: grid; grid-template-columns: 34px 1fr; column-gap: 14px; padding: 0 0 20px; }
+.crm-step-item:not(:last-child)::before { content: ""; position: absolute; inset-inline-start: 16px; top: 32px; bottom: 0; width: 1px; background: #d9e1d3; }
+.crm-step-number { display: grid; place-items: center; width: 34px; height: 34px; grid-row: span 2; background: var(--campaign-sage); color: var(--campaign-forest); border-radius: 50%; font-size: 11px; font-weight: 700; }
+.crm-step-item strong { font-size: 11px; letter-spacing: .8px; padding-top: 1px; }
+.crm-step-item p { font-size: 12px; line-height: 1.6; color: var(--crm-muted); margin: 3px 0 0; }
+.crm-podium-section { background: var(--campaign-sand); border-radius: 10px; padding: 19px; }
+.crm-podium-section h4 { font-size: 15px; margin: 5px 0 16px; }
+.crm-podium-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.crm-podium-card { text-align: center; padding: 16px 7px; border: 1px solid #e7dfce; border-radius: 8px; background: #fff; }
+.crm-podium-card.gold { border-top: 3px solid #ad8d4b; }
+.crm-podium-card.silver { border-top: 3px solid #919b96; }
+.crm-podium-card.bronze { border-top: 3px solid #b28360; }
+.crm-podium-rank { font-size: 11px; color: #685635; }
+.crm-podium-val { font-size: 25px; margin: 6px 0; }
+.crm-podium-card span, .crm-podium-card small { display: block; font-size: 11px; line-height: 1.5; color: var(--crm-muted); }
+.crm-podium-card small { margin-top: 7px; }
+.crm-weeks-timeline { display: grid; gap: 12px; margin-bottom: 25px; }
+.crm-week-row { display: flex; align-items: flex-start; gap: 15px; padding: 15px; background: #f6f8f3; border-radius: 8px; }
+.crm-week-badge { flex-shrink: 0; color: var(--crm-green); font-size: 11px; font-weight: 700; padding-top: 3px; }
+.crm-week-info p { font-size: 12px; line-height: 1.7; margin: 0; }
+.crm-kpis-box { padding: 18px; border: 1px solid var(--crm-border); border-radius: 10px; }
+.crm-kpis-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 16px; }
+.crm-kpis-grid span { display: block; color: var(--crm-muted); font-size: 11px; margin-bottom: 5px; }
+.crm-kpis-grid strong { color: var(--crm-green); font-size: 20px; font-weight: 500; }
+.crm-offer-hero { display: flex; align-items: center; gap: 10px; margin-bottom: 23px; }
+.crm-offer-item { flex: 1; display: flex; align-items: center; gap: 12px; padding: 18px 12px; background: var(--campaign-sand); border-radius: 8px; }
+.crm-offer-item.bonus { background: var(--campaign-sage); }
+.crm-badge-number { font: 400 35px Georgia, serif; color: var(--campaign-gold); }
+.crm-offer-item.bonus .crm-badge-number { color: var(--campaign-forest); }
+.crm-offer-item strong { font-size: 13px; }
+.crm-offer-item p, .crm-offer-item small { font-size: 11px; color: var(--crm-muted); margin: 5px 0; }
+.crm-offer-plus { font-size: 23px; color: var(--crm-muted); }
+.crm-package-summary-table { border: 1px solid var(--crm-border); border-radius: 8px; overflow: hidden; }
+.crm-summary-line { display: flex; justify-content: space-between; gap: 12px; padding: 13px 16px; font-size: 13px; }
+.crm-summary-line + .crm-summary-line { border-top: 1px solid var(--crm-border); }
+.crm-summary-line.bonus { color: var(--crm-green); }
+.crm-summary-line.total { background: #f6f8f3; font-weight: 600; }
+.crm-summary-line.highlight { background: var(--campaign-sand); color: #755627; }
+.crm-scenarios-pills { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 14px; }
+.crm-pill { min-height: 44px; border: 1px solid var(--crm-border); background: #fff; padding: 8px 13px; border-radius: 7px; font-size: 12px; cursor: pointer; }
+.crm-pill.active { color: var(--campaign-forest); background: var(--campaign-sage); border-color: #809675; }
+.crm-icons-table-wrap { overflow-x: auto; border: 1px solid var(--crm-border); border-radius: 8px; }
+.crm-icons-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.crm-icons-table th { padding: 12px; background: #f6f8f3; text-align: start; font-size: 10px; }
+.crm-icons-table td { padding: 12px; border-bottom: 1px solid var(--crm-border); }
+.crm-table-total-row { background: var(--campaign-sand); }
+.crm-pillars-list { display: grid; gap: 17px; }
+.crm-pillar-item { display: flex; align-items: flex-start; gap: 12px; }
+.crm-pillar-badge { display: grid; place-items: center; flex-shrink: 0; width: 30px; height: 30px; background: var(--campaign-sage); color: var(--campaign-forest); border-radius: 7px; font-size: 11px; }
+.crm-pillar-item strong { font-size: 13px; }
+.crm-pillar-item p { margin: 4px 0 0; color: var(--crm-muted); font-size: 12px; line-height: 1.7; }
+.crm-simulator-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-bottom: 24px; padding: 22px; background: #f6f8f3; border-radius: 10px; }
+.crm-sim-input-group label { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 13px; font-size: 13px; }
+.crm-sim-input-group label strong { font-size: 24px; font-weight: 500; color: var(--campaign-forest); }
+.crm-sim-input-group input[type=range] { width: 100%; min-height: 32px; accent-color: var(--crm-green); cursor: pointer; }
+.crm-sim-presets { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.crm-sim-presets button { min-width: 44px; min-height: 44px; border: 1px solid var(--crm-border); background: #fff; border-radius: 6px; font-size: 12px; }
+.crm-sim-presets button.active { color: #fff; background: var(--campaign-forest); border-color: var(--campaign-forest); }
+.crm-prize-options { display: flex; gap: 8px; flex-wrap: wrap; }
+.crm-prize-btn { flex: 1; min-height: 48px; border: 1px solid var(--crm-border); background: #fff; border-radius: 7px; padding: 10px; font-size: 12px; }
+.crm-prize-btn.active { background: var(--campaign-sage); color: var(--campaign-forest); border-color: #809675; }
+.crm-sim-results-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.crm-sim-result-box { padding: 20px 16px; border: 1px solid var(--crm-border); border-radius: 10px; }
+.crm-sim-result-box.highlight { background: var(--campaign-forest); border-color: var(--campaign-forest); color: #fff; }
+.crm-sim-result-box span, .crm-sim-result-box small { display: block; font-size: 11px; color: var(--crm-muted); }
+.crm-sim-result-box.highlight span, .crm-sim-result-box.highlight small { color: #d4dfcf; }
+.crm-sim-result-box strong { display: block; font-size: clamp(20px, 2vw, 29px); font-weight: 500; margin: 12px 0 8px; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.crm-empty-campaign { padding: 40px 20px; text-align: center; border: 1px dashed #cfd9c8; border-radius: 10px; background: #f8faf5; }
+.crm-empty-campaign svg { margin-bottom: 12px; color: #718966; }
+.crm-empty-campaign h4 { margin: 0 0 7px; font-size: 17px; }
+.crm-empty-campaign p { color: var(--crm-muted); font-size: 13px; margin-bottom: 20px; }
+.crm-campaign-table th, .crm-campaign-table td { padding: 15px 13px; }
+.crm-campaign-table td { font-size: 12px; }
+.crm-campaign-status-badge { display: inline-flex; padding: 5px 10px; border-radius: 6px; border: 1px solid; font-size: 11px; font-weight: 600; }
+.crm-top-performer-pill { display: inline-flex; align-items: center; gap: 5px; padding: 5px 8px; border-radius: 5px; background: var(--campaign-sand); color: #78572c; font-size: 11px; }
+.crm-overview-campaigns-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.crm-overview-camp-card { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding: 21px; text-align: start; border: 1px solid var(--crm-border); border-radius: 10px; background: #f8faf5; transition: border-color .2s, background .2s; }
+.crm-overview-camp-card:hover { border-color: #809675; background: #fff; }
+.crm-overview-camp-card strong { font: 400 22px/1.2 Georgia, serif; }
+.crm-overview-camp-card p { font-size: 12px; line-height: 1.7; color: var(--crm-muted); margin: 0; }
+.crm-overview-camp-card small { display: flex; align-items: center; gap: 10px; margin-top: auto; font-size: 12px; color: var(--crm-green); }
+
+/* Participation editor: clear sections, editable team cards and live summary. */
+.crm-enrollment-dialog.crm-dialog.wide { width: min(1080px, calc(100vw - 40px)); max-width: 1080px; border-radius: 16px; }
+.crm-enrollment-dialog.crm-dialog > header { padding: 26px 30px; background: #fff; }
+.crm-enrollment-dialog.crm-dialog > header h2 { font: 400 32px/1.2 Georgia, serif; letter-spacing: -.7px; margin-top: 6px; }
+.crm-enrollment-dialog.crm-dialog > header p { font-size: 13px; color: var(--crm-muted); margin-top: 8px; }
+.crm-enrollment-form { padding: 0; }
+.crm-enrollment-layout { display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 0; border: 0; padding: 0; margin: 0; min-width: 0; }
+.crm-enrollment-main { min-width: 0; padding: 8px 30px 28px; }
+.crm-enrollment-section { padding: 24px 0; }
+.crm-enrollment-section + .crm-enrollment-section { border-top: 1px solid var(--crm-border); }
+.crm-enrollment-section-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 22px; }
+.crm-section-icon { display: grid; place-items: center; flex-shrink: 0; width: 38px; height: 38px; background: #edf2e8; color: var(--crm-green); border-radius: 9px; }
+.crm-enrollment-section-head h3 { font-size: 15px; font-weight: 600; margin: 0 0 5px; }
+.crm-enrollment-section-head p { color: var(--crm-muted); font-size: 12px; line-height: 1.6; margin: 0; }
+.crm-section-number { color: #a0ac99; font-size: 11px; margin-inline-start: auto; padding-top: 2px; }
+.crm-enrollment-dialog .crm-form-grid { gap: 16px; }
+.crm-enrollment-dialog .crm-field { margin: 0; min-width: 0; }
+.crm-enrollment-dialog .crm-field > span { display: block; margin-bottom: 8px; font-size: 12px; color: #4f5c4b; letter-spacing: 0; }
+.crm-enrollment-dialog .crm-field input, .crm-enrollment-dialog .crm-field select, .crm-enrollment-dialog .crm-field textarea { width: 100%; min-width: 0; min-height: 46px; padding: 11px 12px; border: 1px solid #d9e1d3; border-radius: 8px; background: #fff; font: inherit; font-size: 14px; color: var(--crm-ink); }
+.crm-enrollment-dialog .crm-field textarea { resize: vertical; }
+.crm-enrollment-dialog .crm-field input:focus-visible, .crm-enrollment-dialog .crm-field select:focus-visible, .crm-enrollment-dialog .crm-field textarea:focus-visible { outline: 2px solid #78916c; outline-offset: 2px; }
+.crm-enrollment-fields { display: grid; gap: 19px; }
+.crm-professional-cards { display: grid; gap: 12px; }
+.crm-professional-row { display: grid; grid-template-columns: 24px minmax(0, 1fr) 120px 36px; gap: 10px; align-items: center; padding: 15px 12px; background: #f7f9f4; border: 1px solid #e2e8dc; border-radius: 10px; }
+.crm-professional-index { font-size: 11px; font-weight: 600; color: #73856b; padding-top: 25px; }
+.crm-remove-professional { margin-top: 25px; color: var(--crm-muted); }
+.crm-remove-professional:hover { background: #f8e9e6; color: var(--crm-error); }
+.crm-add-professional { display: flex; justify-content: center; align-items: center; width: 100%; gap: 8px; min-height: 46px; margin-top: 12px; border: 1px dashed #abbda1; border-radius: 8px; background: #fff; color: var(--crm-green); font-size: 12px; font-weight: 600; }
+.crm-add-professional:hover { background: #f1f5ed; }
+.crm-enrollment-summary { min-width: 0; padding: 30px 24px; background: #f0f3eb; border-inline-start: 1px solid #e0e6d9; }
+.crm-enrollment-summary .crm-overline { color: #56664e; font-size: 10px; letter-spacing: 1.3px; }
+.crm-enrollment-salon-mark { display: grid; place-items: center; width: 58px; height: 58px; background: #e0e8d8; border-radius: 14px; color: #3e5735; margin: 28px 0 17px; }
+.crm-enrollment-summary h3 { font: 400 26px/1.2 Georgia, serif; margin: 0 0 8px; overflow-wrap: anywhere; }
+.crm-enrollment-summary > p { font-size: 12px; line-height: 1.6; color: var(--crm-muted); }
+.crm-enrollment-status { display: inline-flex; margin: 14px 0 26px; padding: 5px 10px; border: 1px solid #ccd8c4; background: #fff; border-radius: 6px; font-size: 11px; color: #4f6046; }
+.crm-enrollment-status.status-completed, .crm-enrollment-status.status-confirmed { color: #265637; background: #e1eedf; }
+.crm-enrollment-status.status-cancelled { color: #8c2e2e; background: #fbefed; border-color: #e8c8c2; }
+.crm-enrollment-goal { display: grid; grid-template-columns: 18px 1fr; gap: 9px; padding: 18px 0; border-block: 1px solid #d9e1d1; color: #4f6046; font-size: 12px; }
+.crm-enrollment-goal strong { grid-column: 2; font-size: 22px; font-weight: 500; }
+.crm-enrollment-progress { margin: 22px 0 28px; }
+.crm-enrollment-progress > div { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; }
+.crm-enrollment-progress progress { appearance: none; display: block; width: 100%; height: 6px; margin-top: 12px; border: 0; border-radius: 6px; background: #dbe4d3; overflow: hidden; }
+.crm-enrollment-progress progress::-webkit-progress-bar { background: #dbe4d3; }
+.crm-enrollment-progress progress::-webkit-progress-value { background: #547347; border-radius: 6px; }
+.crm-enrollment-progress progress::-moz-progress-bar { background: #547347; border-radius: 6px; }
+.crm-enrollment-ranking h4 { display: flex; align-items: center; gap: 8px; font-size: 12px; margin-bottom: 10px; }
+.crm-enrollment-ranking > p { font-size: 12px; line-height: 1.7; color: var(--crm-muted); }
+.crm-enrollment-rank { display: flex; align-items: center; gap: 9px; padding: 14px 0; border-bottom: 1px solid #d9e1d1; }
+.crm-enrollment-rank > span { display: flex; align-items: center; gap: 3px; color: #826436; font-size: 12px; }
+.crm-enrollment-rank > div { flex: 1; min-width: 0; }
+.crm-enrollment-rank strong { display: block; font-size: 12px; overflow-wrap: anywhere; }
+.crm-enrollment-rank small { display: block; margin-top: 5px; font-size: 10px; color: #59664f; }
+.crm-enrollment-rank b { font-size: 12px; font-weight: 500; }
+.crm-enrollment-empty { display: grid; justify-items: center; gap: 10px; padding: 22px; text-align: center; color: var(--crm-muted); font-size: 12px; }
+.crm-enrollment-empty p { margin: 0; }
+.crm-enrollment-footer { position: sticky; bottom: 0; z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: 15px; padding: 18px 30px; border-top: 1px solid var(--crm-border); background: #fff; }
+.crm-enrollment-footer > span { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--crm-muted); }
+.crm-enrollment-footer > div { display: flex; gap: 9px; }
+.crm-campaigns button, .crm-enrollment-dialog button { cursor: pointer; }
+.crm-campaigns button:disabled, .crm-enrollment-dialog button:disabled { cursor: default; opacity: .5; }
+.crm-campaigns button:focus-visible, .crm-enrollment-dialog button:focus-visible, .crm-campaigns summary:focus-visible { outline: 2px solid #78916c; outline-offset: 4px; }
+.crm-campaigns .crm-btn, .crm-enrollment-dialog .crm-btn, .crm-enrollment-dialog .crm-icon { min-height: 44px; }
+@media (max-width: 1180px) {
+  .crm-campaign-grid-2 { grid-template-columns: minmax(0, 1fr); }
+  .crm-campaign-tabs { gap: 10px; }
+  .crm-campaign-tab-btn { padding: 16px; }
+  .crm-campaign-tab-btn strong { font-size: 21px; }
+  .crm-tab-top { align-items: flex-start; flex-direction: column; }
+  .crm-campaign-metrics article { padding: 20px; gap: 12px; }
+  .crm-sim-results-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .crm-campaign-hero { padding: 26px 20px; }
+  .crm-campaign-tabs { grid-template-columns: minmax(0, 1fr); }
+  .crm-campaign-tab-btn { gap: 10px; }
+  .crm-tab-top { flex-direction: row; }
+  .crm-campaign-tab-btn strong { max-width: none; font-size: 24px; }
+  .crm-campaigns .crm-card { padding: 22px 18px; }
+  .crm-campaign-header-row { flex-wrap: wrap; }
+  .crm-campaign-title { font-size: 29px; }
+  .crm-campaign-metrics { grid-template-columns: minmax(0, 1fr); }
+  .crm-campaign-metrics article { padding: 17px 21px; }
+  .crm-campaign-metrics article + article { border-inline-start: 0; border-top: 1px solid var(--crm-border); }
+  .crm-campaign-metrics article > div { display: flex; align-items: center; justify-content: space-between; gap: 15px; flex: 1; }
+  .crm-campaign-metrics strong { font-size: 25px; }
+  .crm-simulator-controls { grid-template-columns: minmax(0, 1fr); padding: 18px; }
+  .crm-overview-campaigns-grid { grid-template-columns: minmax(0, 1fr); }
+  .crm-enrollment-dialog.crm-dialog.wide { width: calc(100vw - 20px); max-height: calc(100dvh - 20px); border-radius: 12px; }
+  .crm-enrollment-dialog.crm-dialog > header { padding: 23px 20px; }
+  .crm-enrollment-layout { grid-template-columns: minmax(0, 1fr); }
+  .crm-enrollment-main { padding: 0 20px; }
+  .crm-enrollment-summary { padding: 25px 20px; border-inline-start: 0; border-top: 1px solid var(--crm-border); }
+  .crm-enrollment-salon-mark { display: none; }
+  .crm-enrollment-summary h3 { margin-top: 15px; }
+  .crm-enrollment-dialog .crm-field input, .crm-enrollment-dialog .crm-field select, .crm-enrollment-dialog .crm-field textarea { font-size: 16px; }
+  .crm-professional-row { grid-template-columns: 20px minmax(0, 1fr) 44px; gap: 9px; }
+  .crm-professional-row .crm-field:nth-child(3) { grid-column: 2; }
+  .crm-professional-index { padding-top: 0; align-self: start; margin-top: 35px; }
+  .crm-remove-professional { grid-column: 3; grid-row: 1 / 3; margin: 0; align-self: center; }
+  .crm-enrollment-footer { padding: 14px 20px; }
+  .crm-enrollment-footer > span { display: none; }
+  .crm-enrollment-footer > div { justify-content: flex-end; width: 100%; }
+}
+@media (max-width: 420px) {
+  .crm-campaign-hero h2 { font-size: 35px; }
+  .crm-campaigns .crm-card-head { flex-wrap: wrap; gap: 15px; }
+  .crm-podium-cards { grid-template-columns: minmax(0, 1fr); }
+  .crm-podium-card { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; align-items: center; padding: 14px; text-align: start; }
+  .crm-podium-val { grid-column: 2; grid-row: 1 / 3; text-align: end; margin: 0; }
+  .crm-podium-card small { grid-column: 1 / 3; }
+  .crm-sim-results-grid { grid-template-columns: minmax(0, 1fr); }
+  .crm-offer-hero { flex-direction: column; align-items: stretch; }
+  .crm-offer-plus { text-align: center; }
+  .crm-enrollment-dialog .crm-form-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .crm-campaigns *, .crm-enrollment-dialog * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}

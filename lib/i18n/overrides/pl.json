@@ -103,5 +103,20 @@
   "Não avaliado": "Nie oceniono",
   "a menos de {v0}": "do mniej niż {v0}",
   "ou mais": "lub więcej",
-  "Sair da conta": "Wyloguj się"
+  "Sair da conta": "Wyloguj się",
+  "Competição de vendas em salões": "Konkurs sprzedaży w salonach",
+  "Uma competição de sell-out de Home Care durante 30 dias em cada salão.": "30-dniowy konkurs sprzedaży produktów Home Care w każdym salonie.",
+  "150 unidades de Home Care por salão. Três profissionais premiados por salão elegível: €150 em dinheiro, €100 em dinheiro e €50 em produtos a valor de tabela.": "150 sztuk produktów Home Care na salon. Trzy osoby nagrodzone w każdym uprawnionym salonie: 150 € w gotówce, 100 € w gotówce i produkty o wartości katalogowej 50 €.",
+  "O cenário de €135.000 representa sell-in potencial, supondo reposição integral de 4.500 unidades a €30. Não representa pedidos confirmados nem lucro. O teto de €13.500 corresponde a 10% da projeção; €4.500 são capacidade não alocada, e não lucro.": "Scenariusz 135 000 € oznacza potencjalny sell-in przy pełnym uzupełnieniu 4 500 sztuk po 30 €. Nie są to potwierdzone zamówienia ani zysk. Limit 13 500 € stanowi 10% tej prognozy; pozostałe 4 500 € to niewykorzystana część budżetu, a nie zysk.",
+  "Oferta profissional Braé 12+12": "Oferta profesjonalna Braé 12+12",
+  "Compre 12 pós descolorantes Wanna Be Blonde e receba 12 oxidantes OX grátis.": "Kup 12 proszków rozjaśniających Wanna Be Blonde i otrzymaj 12 oksydantów OX gratis.",
+  "12 × 500 g de pó descolorante a €33 = €396 pagos. 12 × 900 ml de oxidante OX a €13 = €156 em bônus a valor de tabela. 24 unidades entregues, €552 de valor combinado.": "12 proszków rozjaśniających po 500 g w cenie 33 € = 396 € do zapłaty. 12 oksydantów OX po 900 ml w cenie 13 € = 156 € wartości katalogowej gratis. Łącznie 24 sztuki o wartości 552 €.",
+  "Considera-se um pacote por salão participante. Produtos bônus não são receita. Estoque, custos efetivos de aquisição, apoio do fornecedor e margens precisam de confirmação. A fonte apresenta valores divergentes para 40 salões; o sistema calcula 40 × €396 = €15.840.": "Założono jeden pakiet na uczestniczący salon. Produkty gratis nie są przychodem. Stan magazynowy, rzeczywiste koszty zakupu, wsparcie dostawcy i marże wymagają potwierdzenia. Źródło podaje sprzeczne kwoty dla 40 salonów; system oblicza 40 × 396 € = 15 840 €.",
+  "The Icons Edit": "The Icons Edit",
+  "13 favoritos profissionais em um bundle multimarcas de €414, com bônus de produto.": "13 profesjonalnych bestsellerów w zestawie wielu marek za 414 €, z dodatkowym produktem.",
+  "O bundle é vendido pelo valor integral de tabela, sem desconto em dinheiro. O produto extra precisa ser selecionado e aprovado. O bônus ilustrativo de €19 não representa SKU aprovado nem custo promocional efetivo.": "Zestaw jest sprzedawany za pełną łączną wartość katalogową, bez rabatu gotówkowego. Dodatkowy produkt musi zostać wybrany i zatwierdzony. Przykładowy bonus o wartości 19 € nie oznacza zatwierdzonego SKU ani rzeczywistego kosztu promocji.",
+  "Considera-se um bundle por salão. Os cenários abrangem 30, 50 e 70 salões. Unidades pagas excluem o bônus. A fonte informa Revival Oil a €23,50, mas apresenta um total divergente de €33,50; uma unidade a €23,50 resulta no bundle de €414. Confirme antes do lançamento.": "Założono jeden zestaw na salon. Scenariusze obejmują 30, 50 i 70 salonów. Liczba płatnych sztuk nie obejmuje gratisu. Źródło podaje cenę Revival Oil 23,50 €, ale sprzeczną wartość pozycji 33,50 €; jedna sztuka po 23,50 € daje deklarowaną cenę zestawu 414 €. Potwierdź przed rozpoczęciem kampanii.",
+  "Oxidante OX": "Oksydant OX",
+  "Pó descolorante": "Proszek rozjaśniający",
+  "Failed to fetch": "Nie udało się połączyć z serwerem. Spróbuj ponownie."
 }
