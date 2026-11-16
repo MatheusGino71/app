@@ -88,7 +88,32 @@ export default function CampaignPanel({
           ? ["Semana 1 · Confirme salões, regras, treinamento e estoque inicial.", "Semana 2 · Acompanhe as vendas e apoie as equipes.", "Semana 3 · Apoie salões com baixo desempenho e incentive a reposição.", "Semana 4 · Valide vendas, elegibilidade, prêmios e pedidos de reposição."]
           : campaign.timeline,
       }
-    : campaign;
+    : language.toLowerCase().startsWith("es")
+      ? {
+          ...campaign,
+          name: activeTab === "salon-sales" ? "Competición de ventas en salones" : activeTab === "brae-12-12" ? "Oferta profesional Braé 12+12" : "The Icons Edit",
+          subtitle: activeTab === "salon-sales"
+            ? "Una competición de sell-out de Home Care durante 30 días en cada salón."
+            : activeTab === "brae-12-12"
+              ? "Compra 12 polvos decolorantes Wanna Be Blonde y recibe 12 oxidantes OX gratis."
+              : "13 favoritos profesionales en un bundle multimarca de €414, con un producto adicional.",
+          mechanic: activeTab === "salon-sales"
+            ? "150 unidades Home Care por salón. Tres profesionales premiados por salón elegible: €150 en efectivo, €100 en efectivo y €50 en productos."
+            : activeTab === "brae-12-12"
+              ? "12 × 500 g de polvo decolorante a €33 = €396 pagados. 12 × 900 ml de oxidante OX a €13 = €156 de valor adicional. 24 unidades entregadas, €552 de valor combinado."
+              : "El bundle se vende a su valor completo de lista, sin descuento en efectivo. El producto adicional debe seleccionarse y aprobarse.",
+          conditions: activeTab === "salon-sales"
+            ? "El escenario de €135.000 representa un sell-in potencial, suponiendo la reposición completa de 4.500 unidades a €30. No son pedidos confirmados ni beneficio."
+            : activeTab === "brae-12-12"
+              ? "Se supone un paquete por salón participante. Los productos adicionales no son ingresos. Stock, costes de adquisición y márgenes están sujetos a confirmación."
+              : "Se supone un bundle por salón. Las unidades pagadas excluyen el producto adicional. Confirma la composición, el SKU y los costes antes del lanzamiento.",
+          timeline: activeTab === "salon-sales"
+            ? ["Semana 1 · Confirma salones, reglas, formación y stock inicial.", "Semana 2 · Controla las ventas y apoya a los equipos.", "Semana 3 · Apoya a los salones con bajo rendimiento e impulsa la reposición.", "Semana 4 · Valida ventas, elegibilidad, premios y pedidos de reposición."]
+            : activeTab === "brae-12-12"
+              ? ["Días 1–2 · Comprueba stock, variantes, márgenes y apoyo del proveedor.", "Días 3–4 · Aprueba la mecánica y los materiales de venta.", "Días 5–7 · Contacta con los salones seleccionados.", "Días 8–10 · Controla pedidos, asignación de stock y adopción."]
+              : ["Confirma la composición de 13 unidades y el precio comercial de €414.", "Selecciona el SKU adicional y valida stock y costes de adquisición.", "Confirma márgenes y objetivos de participación.", "Aprueba la comunicación comercial y el lanzamiento."],
+        }
+      : campaign;
   const entries = (data.campaignEntries ?? []).filter((e) => e.campaignId === activeTab);
 
   // Status labels mapping
@@ -223,7 +248,7 @@ export default function CampaignPanel({
                       <span className="crm-tab-duration">{ct("promotional_period")}</span>
                     )}
                   </div>
-                  <strong>{language.toLowerCase().startsWith("pt") ? c.id === "salon-sales" ? "Competição de Sell-out em Salões" : c.id === "brae-12-12" ? "Oferta Profissional Braé 12+12" : "The Icons Edit" : c.name}</strong>
+                  <strong>{language.toLowerCase().startsWith("pt") ? c.id === "salon-sales" ? "Competição de Sell-out em Salões" : c.id === "brae-12-12" ? "Oferta Profissional Braé 12+12" : "The Icons Edit" : language.toLowerCase().startsWith("es") ? c.id === "salon-sales" ? "Competición de ventas en salones" : c.id === "brae-12-12" ? "Oferta profesional Braé 12+12" : "The Icons Edit" : c.name}</strong>
                   <div className="crm-tab-foot">
                     <span>
                       {count} {count === 1 ? ct("salon_count_single") : ct("salons_count")}
@@ -957,7 +982,7 @@ export default function CampaignPanel({
                         professionals: [
                           ...editingEntry.professionals,
                           {
-                            name: `Stylist ${editingEntry.professionals.length + 1}`,
+                            name: `${language.toLowerCase().startsWith("es") ? "Profesional" : language.toLowerCase().startsWith("pt") ? "Profissional" : "Stylist"} ${editingEntry.professionals.length + 1}`,
                             units: 0,
                           },
                         ],
@@ -985,7 +1010,7 @@ export default function CampaignPanel({
                         <tr key={idx}>
                           <td>
                             <span className={`crm-rank-badge ${idx < 3 ? `rank-${idx + 1}` : ""}`}>
-                              {idx === 0 ? "1ST" : idx === 1 ? "2ND" : idx === 2 ? "3RD" : `0${idx + 1}`}
+                              {idx === 0 ? (language.toLowerCase().startsWith("es") ? "1.º" : "1ST") : idx === 1 ? (language.toLowerCase().startsWith("es") ? "2.º" : "2ND") : idx === 2 ? (language.toLowerCase().startsWith("es") ? "3.º" : "3RD") : `0${idx + 1}`}
                             </span>
                           </td>
                           <td>
@@ -1045,7 +1070,7 @@ export default function CampaignPanel({
                           className={`crm-podium-preview-card ${i === 0 ? "first" : i === 1 ? "second" : "third"}`}
                         >
                           <div className="crm-podium-preview-rank">
-                            {i === 0 ? "1ST PLACE (€150 CASH)" : i === 1 ? "2ND PLACE (€100 CASH)" : "3RD PLACE (€50 PRODUCT)"}
+                            {i === 0 ? `${language.toLowerCase().startsWith("es") ? "1.º PUESTO" : language.toLowerCase().startsWith("pt") ? "1º LUGAR" : "1ST PLACE"} (€150 ${language.toLowerCase().startsWith("es") ? "EN EFECTIVO" : language.toLowerCase().startsWith("pt") ? "EM DINHEIRO" : "CASH"})` : i === 1 ? `${language.toLowerCase().startsWith("es") ? "2.º PUESTO" : language.toLowerCase().startsWith("pt") ? "2º LUGAR" : "2ND PLACE"} (€100 ${language.toLowerCase().startsWith("es") ? "EN EFECTIVO" : language.toLowerCase().startsWith("pt") ? "EM DINHEIRO" : "CASH"})` : `${language.toLowerCase().startsWith("es") ? "3.º PUESTO" : language.toLowerCase().startsWith("pt") ? "3º LUGAR" : "3RD PLACE"} (€50 ${language.toLowerCase().startsWith("es") ? "EN PRODUCTO" : language.toLowerCase().startsWith("pt") ? "EM PRODUTO" : "PRODUCT"})`}
                           </div>
                           <strong>{r.name || "—"}</strong>
                           <span>{r.units} {ct("units")} {ct("sold")}</span>

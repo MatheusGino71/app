@@ -112,6 +112,56 @@ const pt: CampaignMessages = {
   step_replenish: "REPONHA", step_replenish_desc: "As vendas ao consumidor impulsionam pedidos imediatos de reposição"
 };
 
+const es: CampaignMessages = {
+  ...en,
+  activation_flow: "Flujo de activación", actual_purchase_value: "Valor real de compra", badge_trade_marketing: "TRADE MARKETING",
+  bleaching_powder: "Polvo decolorante", bonus_product_value: "Valor del producto adicional", btn_add_professional: "Añadir profesional",
+  btn_cancel: "Cancelar", btn_save: "Guardar inscripción", btn_saving: "Guardando…", budget_ceiling: "Límite de presupuesto",
+  cash_prize: "Premio en efectivo", col_actions: "Acciones", col_order_ref: "Referencia del pedido", col_packages: "Paquetes",
+  col_professionals: "Profesionales", col_salon: "Salón", col_sell_out: "Sell-out", col_start_date: "Fecha de inicio",
+  col_status: "Estado", col_top_performer: "Mejor resultado", combined_price_list_value: "Valor combinado de lista",
+  commercial_scenarios: "Escenarios comerciales", composition_title: "COMPOSICIÓN DE LA OFERTA", conservative: "Conservador",
+  day_activation: "días de activación", days: "días", delivered_without_cost: "Entregado sin coste", edit_enrollment: "Editar inscripción",
+  effective_saving: "Ahorro efectivo", enroll_first_salon: "Inscribir el primer salón", enroll_salon: "Inscribir salón",
+  enrolled_salons_title: "Salones inscritos", execution_plan: "Plan de ejecución", expected_sell_out: "Sell-out esperado",
+  field_notes: "Notas", field_notes_placeholder: "Añade contexto, seguimiento o evidencias", field_order_ref: "Referencia del pedido",
+  field_order_ref_placeholder: "p. ej., PO-2026-001", field_packages: "Paquetes", field_salon: "Salón",
+  field_start_date: "Fecha de inicio", field_status: "Estado de participación", first_place: "1.er puesto", free_bonus: "Bono gratuito",
+  free_product_value: "Valor de productos gratuitos", growth_pillar_1_desc: "Un surtido enfocado facilita explicar y ejecutar la oferta.",
+  growth_pillar_1_title: "Oferta clara", growth_pillar_2_desc: "Una ventana de lanzamiento definida crea urgencia sin descontar la marca.",
+  growth_pillar_2_title: "Activación rápida", growth_pillar_3_desc: "Controla sell-out, reposición y participación en una misma vista.",
+  growth_pillar_3_title: "Progreso visible", growth_pillar_4_desc: "Usa evidencias para escalar lo que funciona en la red de salones.",
+  growth_pillar_4_title: "Crecimiento repetible", hero_description: "Planifica, activa y mide programas comerciales desde una única vista operativa.",
+  hero_title: "Eventos y campañas", home_care_paid_units: "Unidades Home Care pagadas", how_it_works: "Cómo funciona",
+  icons_edit_heading: "The Icons Edit", individual_recognition: "Reconocimiento individual", kpis_title: "Indicadores clave",
+  management_overline: "GESTIÓN DE PARTICIPACIÓN", maximum_budget: "Presupuesto máximo", mechanic_title: "Mecánica",
+  modal_enroll_subtitle: "Registra la participación del salón en", modal_enroll_title: "Inscribir salón",
+  more_value_no_discount: "Más valor, sin descuento", more_value_no_discount_desc: "Un bundle multimarca seleccionado que protege el valor de lista.",
+  multi_brand_opportunity: "Oportunidad multimarca", multi_brand_portfolio: "Portfolio multimarca",
+  no_salons_enrolled: "Aún no hay salones inscritos", no_salons_enrolled_desc: "Añade un salón para controlar participación, pedidos y resultados.",
+  of_potential_sell_in: "% del sell-in potencial", ox_developer: "Oxidante OX", package_composition: "Composición del paquete",
+  paid_value: "valor pagado", participating_salons: "salones participantes", podium_preview: "Vista previa del podio",
+  potential_sell_in: "Sell-in potencial", prize_allocation: "Asignación de premios", prize_investment: "Inversión en premios",
+  prizes_per_salon: "Premios por salón", product: "producto", product_prize: "Premio en producto",
+  prof_name_placeholder: "Nombre del profesional", prof_section_desc: "Controla el sell-out validado de cada profesional para el ranking.",
+  prof_section_title: "Profesionales y unidades vendidas", prof_units_label: "Unidades vendidas", projected_sell_in: "Sell-in proyectado",
+  promotional_period: "Periodo promocional", quantity: "Cantidad", rapid_execution: "Ejecución rápida",
+  recommended: "Recomendado", regulatory_note: "Nota operativa", remaining_capacity: "capacidad restante",
+  retail_price_list: "valor de lista", revenue_opportunity: "Oportunidad de ingresos", salon_count_single: "salón",
+  salons_count: "salones", second_place: "2.º puesto", sim_prize_scenario_label: "Escenario de premios",
+  sim_salons_label: "Salones participantes", simulator_overline: "PLANIFICADOR DE ESCENARIOS", simulator_title: "Modela la oportunidad",
+  slides: "páginas", status_cancelled: "Cancelado", status_completed: "Completado", status_confirmed: "Confirmado",
+  status_contacted: "Contactado", status_planned: "Planificado", step: "Paso", target_per_salon: "Objetivo por salón",
+  target_units_sold: "Unidades objetivo", third_place: "3.er puesto", timeline_subtitle: "Una cadencia práctica de 30 días",
+  timeline_title: "CALENDARIO DE ACTIVACIÓN", total: "Total", total_delivered_value: "Valor total entregado",
+  total_share: "del premio total", total_units: "unidades totales", unit_price: "Precio unitario", unknown_salon: "Salón desconocido", week: "Semana",
+  position: "Posición", professional_name: "Nombre del profesional", remove_professional: "Eliminar profesional", sold: "vendidas", units: "unidades",
+  step_select: "SELECCIONA", step_select_desc: "30 salones profesionales seleccionados en el territorio", step_activate: "ACTIVA", step_activate_desc: "Objetivo de 150 unidades Home Care por salón en 30 días",
+  step_compete: "COMPITE", step_compete_desc: "Los profesionales compiten individualmente por el sell-out validado", step_reward: "PREMIA", step_reward_desc: "Los tres mejores reciben premios en cada salón elegible",
+  step_replenish: "REPONE", step_replenish_desc: "Las ventas al consumidor impulsan pedidos inmediatos de reposición"
+};
+
 export function getCampaignText(key: CampaignLocaleKey, language = "en") {
-  return (language.toLowerCase().startsWith("pt") ? pt : en)[key];
+  const normalized = language.toLowerCase();
+  return (normalized.startsWith("pt") ? pt : normalized.startsWith("es") ? es : en)[key];
 }
