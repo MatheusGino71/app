@@ -1,7 +1,7 @@
 require("../scripts/register.cjs");
 const assert=require("node:assert/strict");const {spawn}=require("node:child_process");const {randomBytes}=require("node:crypto");const {mkdtempSync,rmSync}=require("node:fs");const {tmpdir}=require("node:os");const {join,resolve,dirname}=require("node:path");const {emptyDiagnostic,emptySalon}=require("../lib/domain.ts");
 const folder=mkdtempSync(join(tmpdir(),"atelier-http-test-"));const port=process.env.ATELIER_TEST_PORT||"3117";const base=`http://127.0.0.1:${port}`;const setupCode=randomBytes(24).toString("hex");const password=randomBytes(20).toString("hex");
-const child=spawn(process.execPath,[resolve("node_modules/next/dist/bin/next"),"start","--hostname","127.0.0.1","--port",port],{windowsHide:true,env:{...process.env,NODE_ENV:"production",VERCEL:"",TURSO_DATABASE_URL:"",TURSO_AUTH_TOKEN:"",ATELIER_DATABASE_PATH:join(folder,"test.sqlite"),ATELIER_SETUP_TOKEN:setupCode,MAIL_TRANSPORT:"",RESEND_API_KEY:"",MAIL_FROM:"",ATELIER_APP_ORIGIN:base},stdio:["ignore","pipe","pipe"]});
+const child=spawn(process.execPath,[resolve("node_modules/next/dist/bin/next"),"start","--hostname","127.0.0.1","--port",port],{windowsHide:true,env:{...process.env,NODE_ENV:"production",VERCEL:"",TURSO_DATABASE_URL:"",TURSO_AUTH_TOKEN:"",ATELIER_DATABASE_PATH:join(folder,"test.sqlite"),ATELIER_SETUP_TOKEN:setupCode,ATELIER_MFA_KEY:randomBytes(32).toString("hex"),MAIL_TRANSPORT:"",RESEND_API_KEY:"",MAIL_FROM:"",ATELIER_APP_ORIGIN:base},stdio:["ignore","pipe","pipe"]});
 let exited=false;let logs="";child.on("exit",()=>{exited=true;});child.stdout.on("data",v=>{logs+=v;});child.stderr.on("data",v=>{logs+=v;});const delay=ms=>new Promise(r=>setTimeout(r,ms));
 async function post(path,payload,cookie="",origin=base){const r=await fetch(base+path,{method:"POST",headers:{"content-type":"application/json",origin,...(cookie?{cookie}:{})},body:JSON.stringify(payload)});return{status:r.status,body:await r.json(),cookie:r.headers.get("set-cookie")?.split(";")[0]||"",header:r.headers.get("set-cookie")||""};}
 function expect(r,status,stage){assert.equal(r.status,status,`${stage}: ${r.body.error||""}`);}
@@ -33,5 +33,25 @@ function expect(r,status,stage){assert.equal(r.status,status,`${stage}: ${r.body
  r=await post("/api/auth",{action:"login",email:"sales@example.test",password:password+"new"});expect(r,200,"Login apos recuperacao");assert.equal(r.body.redirectTo,"/workspace");
  const health=await fetch(base+"/api/health");assert.equal(health.status,200);assert.deepEqual(await health.json(),{status:"ready",database:"local",mail:"unconfigured"});
  html=await(await fetch(base+"/entrar")).text();assert.ok(html.includes("GRACE PRO TEAM ACCESS"));assert.ok(!html.includes("Let's get to know each other."));assert.ok(!html.includes("Customer registration is open"));
- console.log("HTTP: acesso interno sem email, convites, permissoes, carteiras isoladas, diagnostico, classificacao, anexos e recuperacao administrativa aprovados.");
+ assert.equal((await fetch(base+"/api/privacy")).status,401);assert.equal((await fetch(base+"/api/security")).status,401);assert.equal((await fetch(base+"/api/maintenance")).status,401);
+ expect(await post("/api/privacy",{action:"create",kind:"access",salonId,note:"Subject requested a copy of personal data"},sales,"https://foreign.example"),403,"Privacy CSRF");
+ const access=await post("/api/privacy",{action:"create",kind:"access",salonId,note:"Subject requested a copy of personal data"},admin);expect(access,200,"Request registered");
+ const requestId=access.body.id;
+ expect(await post("/api/privacy",{action:"export",id:requestId,version:0,password},admin),409,"Identity verification required");
+ expect(await post("/api/privacy",{action:"verify",id:requestId,version:0,response:"Identity and authority checked using known business contact"},admin),200,"Identity verified");
+ const exported=await post("/api/privacy",{action:"export",id:requestId,version:1,password},admin);expect(exported,200,"Verified private export");assert.equal(exported.body.salon.id,salonId);assert.equal(exported.body.password,undefined);
+ const own=await post("/api/privacy",{action:"personalExport"},admin);expect(own,200,"Own account export");assert.deepEqual(Object.keys(own.body.account).sort(),["email","id","name"]);
+ const privacyPage=await fetch(base+"/privacidade");assert.equal(privacyPage.status,200);assert.equal(privacyPage.headers.get("x-content-type-options"),"nosniff");assert.equal(privacyPage.headers.get("x-frame-options"),"DENY");assert.match(privacyPage.headers.get("content-security-policy"),/frame-ancestors 'none'/);
+ const pendingNotice=await privacyPage.text();assert.ok(pendingNotice.includes("privacy notice"));
+ const setup=await post("/api/security",{action:"beginMfa",password},admin);expect(setup,200,"MFA setup");assert.match(setup.body.secret,/^[A-Z2-7]+$/);
+ const {totp}=require("../lib/server/mfa.ts");const otp=totp(setup.body.secret,Math.floor(Date.now()/30000));
+ const enabled=await post("/api/security",{action:"confirmMfa",password,code:otp},admin);expect(enabled,200,"MFA confirmation");assert.equal(enabled.body.recoveryCodes.length,10);
+ assert.equal((await fetch(base+"/api/workspace",{headers:{cookie:admin}})).status,401);
+ expect(await post("/api/auth",{action:"login",email:"admin@example.test",password}),401,"MFA cannot be skipped");
+ expect(await post("/api/auth",{action:"login",email:"admin@example.test",password,otp}),401,"MFA replay blocked");
+ const protectedLogin=await post("/api/auth",{action:"login",email:"admin@example.test",password,otp:enabled.body.recoveryCodes[0]});expect(protectedLogin,200,"Recovery code login");
+ expect(await post("/api/auth",{action:"login",email:"admin@example.test",password,otp:enabled.body.recoveryCodes[0]}),401,"Recovery replay blocked");
+ expect(await post("/api/security",{action:"revokeSessions",password,otp:enabled.body.recoveryCodes[1]},protectedLogin.cookie),200,"Session revocation");
+ assert.equal((await fetch(base+"/api/privacy",{headers:{cookie:protectedLogin.cookie}})).status,401);
+ console.log("HTTP: access, permissions, portfolios, privacy verification/export, security headers, MFA, recovery replay protection and session revocation passed.");
  }finally{if(!exited){const stop=new Promise(r=>child.once("exit",r));child.kill();await Promise.race([stop,delay(5000)]);}if(exited){assert.equal(dirname(resolve(folder)),resolve(tmpdir()));assert.ok(folder.includes("atelier-http-test-"));rmSync(folder,{recursive:true,force:true});}}})().catch(e=>{console.error("Falha HTTP:",e.stack);if(exited&&logs.includes("Error:"))console.error(logs.slice(-1800));process.exitCode=1;});

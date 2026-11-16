@@ -13,12 +13,14 @@ const cacheDirectory = path.join(root, ".data");
 const fallbackFile = path.join(root, "lib", "i18n", "fallbacks.json");
 const pendingFallbacks = readJSON(fallbackFile);
 const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
-const protectedCopy = /(\{\w+\}|\b(?:ATELIER|Grace Pro|GRACE PRO|Deep Test|ORIGIN|SIGNATURE|ICON|BRAÉ|Braé|The Icons Edit|Home Care|Wanna Be Blonde|Revival Oil|OX|SKU)\b|salao_id;compra_eur;pedidos;data_corte;fonte)/g;
+const protectedCopy = /(\{\w+\}|\bEUR(?:150|100|50)\b|\b(?:ATELIER|Grace Pro|GRACE PRO|Deep Test|ORIGIN|SIGNATURE|ICON|BRAÉ|Braé|The Icons Edit|Home Care|Wanna Be Blonde|Revival Oil|OX|SKU)\b|salao_id;compra_eur;pedidos;data_corte;fonte)/g;
 const segmentsOf = text => text.split(protectedCopy).filter((part, index) => index % 2 === 0 && /\p{L}/u.test(part)).map(part => part.trim());
 const segments = [...new Set(Object.values(base).flatMap(segmentsOf))];
 const partKeys = new Map(segments.map((segment, index) => [segment, `m${index}`]));
 const version = crypto.createHash("sha256").update(JSON.stringify(base) + protectedCopy.source).digest("hex").slice(0, 12);
 const argumentsList = process.argv.slice(2);
+const attempts = argumentsList.includes("--quick") ? 1 : 3;
+const timeoutMs = argumentsList.includes("--quick") ? 30000 : 90000;
 const force = argumentsList.includes("--force");
 const requested = argumentsList.filter(argument => !argument.startsWith("--"));
 // Experimental models require an explicitly requested language and editorial review.
@@ -27,9 +29,25 @@ const errors = [];
 let finished = 0;
 
 function readJSON(file, fallback = {}) {
-  try { return JSON.parse(fs.readFileSync(file, "utf8")); } catch { return fallback; }
+  for (let attempt = 0; ; attempt++) {
+    try { return JSON.parse(fs.readFileSync(file, "utf8")); }
+    catch (error) {
+      if (error.code === "ENOENT") return fallback;
+      if (attempt >= 7) throw error;
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 100);
+    }
+  }
 }
-function writeJSON(file, value) { fs.writeFileSync(file, JSON.stringify(value, null, 2) + "\n"); }
+function writeJSON(file, value) {
+  const temporary = path.join(cacheDirectory, `catalog-write-${crypto.randomUUID()}.tmp`);
+  fs.writeFileSync(temporary, JSON.stringify(value, null, 2) + "\n");
+  try {
+    for (let attempt = 0; ; attempt++) {
+      try { fs.renameSync(temporary, file); return; }
+      catch (error) { if (attempt >= 7) throw error; Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 100); }
+    }
+  } finally { if (fs.existsSync(temporary)) fs.unlinkSync(temporary); }
+}
 function customMessages(code) { return readJSON(path.join(root, "lib", "i18n", "overrides", `${code}.json`)); }
 const placeholders = text => (text.match(/\{\w+\}/g) ?? []).sort().join(",");
 
@@ -58,24 +76,23 @@ function createBatches(entries, limit = 9000) {
   return batches.filter(batch => batch.length);
 }
 async function translateBatch(code, batch, index, total) {
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < attempts; attempt++) {
     try {
       const response = await fetch("https://translate.wmcloud.org/api/translate", {
         method: "POST",
         headers: { "Content-Type": "application/json", "User-Agent": "AtelierInterfaceLocalization/1.0 (static public UI copy)" },
         body: JSON.stringify({ source_language: "en", target_language: code, model: models[code], format: "json", content: JSON.stringify(Object.fromEntries(batch)) }),
-        signal: AbortSignal.timeout(90000),
+        signal: AbortSignal.timeout(timeoutMs),
       });
       if (!response.ok) throw new Error(`HTTP ${response.status} ${(await response.text()).slice(0, 300)}`);
       const result = await response.json();
       const output = JSON.parse(result.translation);
       if (!output || typeof output !== "object" || Array.isArray(output)) throw new Error("Invalid translation response");
-      for (const [key, original] of batch) {
-        if (typeof output[key] !== "string" || !output[key].trim()) throw new Error(`Missing translation: ${key}`);
-      }
-      return output;
+      const valid = Object.fromEntries(batch.filter(([key]) => typeof output[key] === "string" && output[key].trim()).map(([key]) => [key, output[key]]));
+      if (Object.keys(valid).length !== batch.length) console.warn(`${code}: ${batch.length - Object.keys(valid).length} untranslated segments remain pending`);
+      return valid;
     } catch (error) {
-      if (attempt === 2) throw new Error(`${code}: ${error.message} ${error.cause?.code ?? ""}`);
+      if (attempt === attempts - 1) throw new Error(`${code}: ${error.message} ${error.cause?.code ?? ""}`);
       console.warn(`${code}: retry batch ${index + 1}/${total}`);
       await sleep(2000 * (attempt + 1));
     }
@@ -100,17 +117,20 @@ async function translateLanguage(code) {
     await sleep(300);
   }
   const catalog = { ...existing };
+  const unresolved = [];
   for (const [source, english] of missing) {
+    if (segmentsOf(english).some(part => typeof translated[partKeys.get(part)] !== "string" || !translated[partKeys.get(part)].trim())) { unresolved.push(source); continue; }
     catalog[source] = english.split(protectedCopy).map((part, index) => {
       if (index % 2 || !/\p{L}/u.test(part)) return part;
       return (part.match(/^\s*/)?.[0] ?? "") + translated[partKeys.get(part.trim())].trim() + (part.match(/\s*$/)?.[0] ?? "");
     }).join("");
   }
   publishCatalog(code, catalog);
-  delete pendingFallbacks[code];
+  if (unresolved.length) { pendingFallbacks[code] = unresolved; errors.push(code); }
+  else delete pendingFallbacks[code];
   writeJSON(fallbackFile, pendingFallbacks);
   finished++;
-  console.log(`${code}: ${missing.length} messages updated, ${Math.round((Date.now() - start) / 1000)}s (${finished}/${targets.length})`);
+  console.log(`${code}: ${missing.length - unresolved.length} messages updated, ${unresolved.length} pending, ${Math.round((Date.now() - start) / 1000)}s (${finished}/${targets.length})`);
 }
 function publishPortuguese() {
   publishCatalog("pt-BR", Object.fromEntries(Object.keys(base).map(source => [source, source])));

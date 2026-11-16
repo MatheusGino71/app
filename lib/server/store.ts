@@ -1,12 +1,13 @@
 import { createHash, randomBytes, randomUUID, scryptSync, timingSafeEqual } from "node:crypto";
 import { resolve } from "node:path";
 import { openDatabase, type Row, type SQL } from "./database";
+import { consumeMfa } from "./mfa";
 import { parseCampaignEntry, type CampaignEntry } from "../campaigns";
 import { actionFromVisit, emptyDiagnostic, makeVisit, parseDiagnostic, parseDraft, parseSalon, validDate, type CommercialAction, type Draft, type OnboardingProfile, type PurchaseReview, type Role, type Salon, type User, type Visit, type WorkspaceData } from "../domain";
 export class AppError extends Error { constructor(message: string, public status = 400) { super(message); } }
 const hash = (v: string) => createHash("sha256").update(v).digest("hex");
 const passwordHash = (v: string) => { const salt = randomBytes(16).toString("hex"); return salt + ":" + scryptSync(v, salt, 64).toString("hex"); };
-const matches = (v: string, stored: string) => { const [salt, digest] = stored.split(":"); const actual = scryptSync(v, salt, 64); const expected = Buffer.from(digest, "hex"); return actual.length === expected.length && timingSafeEqual(actual, expected); };
+const matches = (v: string, stored: string) => { const [salt, digest] = stored.split(":"); const valid = /^[a-f0-9]{32}$/.test(salt ?? "") && /^[a-f0-9]{128}$/.test(digest ?? ""); const actual = scryptSync(v, valid ? salt : "0".repeat(32), 64); const expected = Buffer.from(valid ? digest : "0".repeat(128), "hex"); return valid && timingSafeEqual(actual, expected); };
 const text = (v: unknown, max = 4000) => { if (typeof v !== "string" || v.length > max) throw new AppError("Texto inválido."); return v.trim(); };
 const record = (v: unknown): Row => { if (!v || typeof v !== "object" || Array.isArray(v)) throw new AppError("Formato inválido."); return v as Row; };
 const emailOf = (v: unknown) => { const email = text(v, 254).toLowerCase(); if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new AppError("Informe um e-mail válido."); return email; };
@@ -17,6 +18,7 @@ const USER_SELECT = "SELECT u.*, c.user_id AS customer_id, e.verified_at FROM us
 export function requireStaff(user: User) { if (user.role === "cliente") throw new AppError("Este recurso pertence à equipe Grace Pro.", 403); }
 export async function createStore(path: string, authToken?: string) {
   const db = openDatabase(path, authToken);
+  const authenticationProofs = new WeakMap<User, { password: string; mfa: string }>();
   // Additive migrations preserve existing accounts, passwords and all historical diagnostics.
   await db.exec(`
     CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL UNIQUE, role TEXT NOT NULL CHECK(role IN ('admin','gestor','comercial')), password TEXT NOT NULL);
@@ -36,6 +38,12 @@ export async function createStore(path: string, authToken?: string) {
     CREATE TABLE IF NOT EXISTS audit (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), event TEXT NOT NULL, entity_id TEXT NOT NULL, created_at TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS evidence_files (id TEXT PRIMARY KEY, salon_id TEXT NOT NULL REFERENCES salons(id), user_id TEXT NOT NULL REFERENCES users(id), name TEXT NOT NULL, mime TEXT NOT NULL, content TEXT NOT NULL, created_at TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS campaign_entries (campaign_id TEXT NOT NULL, salon_id TEXT NOT NULL REFERENCES salons(id), version INTEGER NOT NULL, data TEXT NOT NULL, PRIMARY KEY(campaign_id,salon_id));
+    CREATE TABLE IF NOT EXISTS mfa_credentials (user_id TEXT PRIMARY KEY REFERENCES users(id), secret TEXT NOT NULL, last_step INTEGER NOT NULL, enabled_at TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS mfa_recovery (user_id TEXT NOT NULL REFERENCES users(id), code_hash TEXT NOT NULL, PRIMARY KEY(user_id,code_hash));
+    CREATE TABLE IF NOT EXISTS mfa_pending (user_id TEXT PRIMARY KEY REFERENCES users(id), secret TEXT NOT NULL, expires INTEGER NOT NULL);
+    CREATE TABLE IF NOT EXISTS privacy_requests (id TEXT PRIMARY KEY, requested_by TEXT NOT NULL REFERENCES users(id), salon_id TEXT, kind TEXT NOT NULL, status TEXT NOT NULL, created_at TEXT NOT NULL, due_at TEXT NOT NULL, updated_at TEXT NOT NULL, note TEXT NOT NULL, response TEXT NOT NULL, verified_at TEXT, version INTEGER NOT NULL);
+    CREATE TABLE IF NOT EXISTS erased_salons (salon_id TEXT PRIMARY KEY, erased_at TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS restricted_salons (salon_id TEXT PRIMARY KEY REFERENCES salons(id), request_id TEXT NOT NULL, restricted_at TEXT NOT NULL);
     CREATE INDEX IF NOT EXISTS visits_salon ON visits(salon_id, created_at);
     CREATE INDEX IF NOT EXISTS salons_owner ON salons(owner_id);
     CREATE INDEX IF NOT EXISTS reviews_status ON purchase_reviews(status);`);
@@ -45,11 +53,13 @@ export async function createStore(path: string, authToken?: string) {
   async function salonFor(user: User, id: string, q: SQL = db): Promise<Salon> {
     requireStaff(user); const row = await q.get("SELECT * FROM salons WHERE id=?", id);
     if (!row || user.role === "comercial" && row.owner_id !== user.id) throw new AppError("Salão não encontrado na sua carteira.", 404);
+    if (await q.get("SELECT salon_id FROM restricted_salons WHERE salon_id=?", id)) throw new AppError("O tratamento deste cadastro está restrito. Procure a administração.", 409);
     return json<Salon>(row);
   }
   async function personalSalon(user: User, id: string, q: SQL = db) {
     const link = await q.get("SELECT salon_id FROM account_profiles WHERE user_id=? AND salon_id=?", user.id, id);
     if (!link) throw new AppError("Salão não encontrado na sua conta.", 404);
+    if (await q.get("SELECT salon_id FROM restricted_salons WHERE salon_id=?", id)) throw new AppError("O tratamento deste cadastro está restrito. Procure a administração.", 409);
     return json<Salon>((await q.get("SELECT * FROM salons WHERE id=?", id))!);
   }
   async function draftFor(user: User): Promise<Draft | null> { const r = await db.get("SELECT * FROM drafts WHERE user_id=?", user.id); return r ? json<Draft>(r) : null; }
@@ -92,11 +102,11 @@ export async function createStore(path: string, authToken?: string) {
         const user: User = { id: randomUUID(), name, email, role, emailVerified: false };
         await q.run("INSERT INTO users VALUES (?,?,?,?,?)", user.id, name, email, role === "cliente" ? "comercial" : role, digest);
         if (role === "cliente") await q.run("INSERT INTO customer_accounts VALUES (?)", user.id);
-        await q.run("INSERT INTO email_status VALUES (?,NULL)", user.id); await audit(q, user, "account.created", user.id); return user;
+        await q.run("INSERT INTO email_status VALUES (?,NULL)", user.id); await audit(q, user, "account.created", user.id); authenticationProofs.set(user, { password: digest, mfa: "" }); return user;
       });
     },
-    async login(input: unknown): Promise<User> { const v = record(input); const email = emailOf(v.email); const password = typeof v.password === "string" && v.password.length <= 128 ? v.password : ""; const row = await db.get(USER_SELECT + " WHERE u.email=?", email); const correct = matches(password, row ? String(row.password) : "00000000000000000000000000000000:" + "00".repeat(64)); if (!row || !correct) throw new AppError("E-mail ou senha incorretos.", 401); return safeUser(row); },
-    async createSession(user: User, remember: boolean) { const token = randomBytes(32).toString("hex"); const maxAge = remember ? 30 * 86400 : 12 * 3600; await db.run("DELETE FROM sessions WHERE expires<?", Date.now()); await db.run("INSERT INTO sessions VALUES (?,?,?)", hash(token), user.id, Date.now() + maxAge * 1000); return { token, maxAge }; },
+    async login(input: unknown): Promise<User> { const v = record(input); const email = emailOf(v.email); const password = typeof v.password === "string" && v.password.length <= 128 ? v.password : ""; const row = await db.get(USER_SELECT + " WHERE u.email=?", email); const correct = matches(password, row ? String(row.password) : "00000000000000000000000000000000:" + "00".repeat(64)); if (!row || !correct) throw new AppError("E-mail ou senha incorretos.", 401); return db.transaction(async q => { if (!await consumeMfa(q, String(row.id), text(v.otp ?? "", 64))) throw new AppError("Informe um código válido do autenticador ou de recuperação.", 401); const credential = await q.get("SELECT secret FROM mfa_credentials WHERE user_id=?", String(row.id)); const user = safeUser(row); authenticationProofs.set(user, { password: String(row.password), mfa: String(credential?.secret ?? "") }); return user; }); },
+    async createSession(user: User, remember: boolean) { const token = randomBytes(32).toString("hex"); const maxAge = remember ? 30 * 86400 : 12 * 3600; await db.transaction(async q => { const proof = authenticationProofs.get(user); const row = await q.get("SELECT u.password,m.secret FROM users u LEFT JOIN mfa_credentials m ON m.user_id=u.id WHERE u.id=?", user.id); if (!proof || !row || row.password !== proof.password || String(row.secret ?? "") !== proof.mfa) throw new AppError("Entre novamente após a alteração de segurança.", 401); authenticationProofs.delete(user); await q.run("DELETE FROM sessions WHERE expires<?", Date.now()); await q.run("INSERT INTO sessions VALUES (?,?,?)", hash(token), user.id, Date.now() + maxAge * 1000); }); return { token, maxAge }; },
     async session(token: string | undefined): Promise<User | null> { if (!token || !/^[a-f0-9]{64}$/.test(token)) return null; const row = await db.get("SELECT user_id FROM sessions WHERE token=? AND expires>?", hash(token), Date.now()); return row ? userById(String(row.user_id)) : null; },
     async logout(token: string) { await db.run("DELETE FROM sessions WHERE token=?", hash(token)); },
     async verification(user: User) { const current = await userById(user.id); if (!current || current.emailVerified) return null; return { user: current, code: await issueToken(user.id, "verify") }; },
@@ -115,7 +125,9 @@ export async function createStore(path: string, authToken?: string) {
       const reviews = (await db.all("SELECT r.* FROM purchase_reviews r JOIN salons s ON s.id=r.salon_id WHERE (?<>'comercial' OR s.owner_id=?) ORDER BY r.rowid DESC", user.role, user.id)).map(r => json<PurchaseReview>(r));
       const users = (await db.all(USER_SELECT + " WHERE c.user_id IS NULL ORDER BY u.name")).map(safeUser);
       const campaignEntries = (await db.all("SELECT c.* FROM campaign_entries c JOIN salons s ON s.id=c.salon_id WHERE (?<>'comercial' OR s.owner_id=?) ORDER BY c.campaign_id,c.salon_id", user.role, user.id)).map(r => json<CampaignEntry>(r));
-      return { salons, visits, actions, reviews, campaignEntries, users: user.role === "comercial" ? [user] : users, draft: await draftFor(user) };
+      const restricted = new Set((await db.all("SELECT salon_id FROM restricted_salons")).map(row => String(row.salon_id)));
+      const visible = (id: string) => user.role === "admin" || !restricted.has(id);
+      return { salons: salons.filter(s => visible(s.id)), visits: visits.filter(v => visible(v.salonId)), actions: actions.filter(a => visible(a.salonId)), reviews: reviews.filter(r => visible(r.salonId)), campaignEntries: campaignEntries.filter(c => visible(c.salonId)), users: user.role === "comercial" ? [user] : users, draft: await draftFor(user) };
     },
     async saveCampaignEntry(user: User, input: unknown) {
       requireStaff(user); const entry = parseCampaignEntry(input);
@@ -167,9 +179,9 @@ export async function createStore(path: string, authToken?: string) {
     async evidenceAccess(user: User, salonId: string) { return user.role === "cliente" ? personalSalon(user, salonId) : salonFor(user, salonId); },
     async addEvidence(user: User, salonId: string, file: { name: string; mime: string; content: string }) { return db.transaction(async q => { if (user.role === "cliente") await personalSalon(user, salonId, q); else await salonFor(user, salonId, q); const id = randomUUID(); const total = await q.get("SELECT count(*) AS n,coalesce(sum(length(content)),0) AS bytes FROM evidence_files WHERE salon_id=?", salonId); if (Number(total?.n ?? 0) >= 30 || Number(total?.bytes ?? 0) + file.content.length > 14_000_000) throw new AppError("Limite de anexos do salão atingido (30 arquivos ou 10 MB)."); await q.run("INSERT INTO evidence_files VALUES (?,?,?,?,?,?,?)", id, salonId, user.id, file.name, file.mime, file.content, new Date().toISOString()); await audit(q,user,"evidence.added",id); return { id }; }); },
     async listEvidence(user: User, salonId: string) { if (user.role === "cliente") await personalSalon(user, salonId); else await salonFor(user, salonId); return db.all("SELECT id,name,mime,created_at FROM evidence_files WHERE salon_id=? ORDER BY rowid DESC", salonId); },
-    async getEvidence(user: User, id: string) { const file = await db.get("SELECT * FROM evidence_files WHERE id=?", id); if (!file) throw new AppError("Anexo não encontrado.", 404); if (user.role === "cliente") await personalSalon(user, String(file.salon_id)); else await salonFor(user, String(file.salon_id)); return file; },
+    async getEvidence(user: User, id: string) { const file = await db.get("SELECT * FROM evidence_files WHERE id=?", id); if (!file) throw new AppError("Anexo não encontrado.", 404); if (user.role === "cliente") await personalSalon(user, String(file.salon_id)); else if (user.role !== "admin") await salonFor(user, String(file.salon_id)); return file; },
   };
 }
-type Store = Awaited<ReturnType<typeof createStore>>;
+export type Store = Awaited<ReturnType<typeof createStore>>;
 const shared = globalThis as unknown as { graceProStoreV1?: Promise<Store>; atelierStoreV3?: Promise<Store> };
 export function getStore(): Promise<Store> { return shared.graceProStoreV1 ??= shared.atelierStoreV3 ??= createStore(process.env.TURSO_DATABASE_URL || process.env.GRACE_PRO_DATABASE_PATH || process.env.ATELIER_DATABASE_PATH || resolve(process.cwd(), ".data", "atelier.sqlite"), process.env.TURSO_AUTH_TOKEN).catch(e => { delete shared.graceProStoreV1; delete shared.atelierStoreV3; throw e; }); }

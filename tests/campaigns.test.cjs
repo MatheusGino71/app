@@ -45,3 +45,22 @@ test('campaign interface uses the selected catalog including full operational co
     if (code === 'en') assert.match(content.conditions, /not profit/);
   }
 });
+
+test('every published campaign describes prize valuations instead of cash payouts', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const { CAMPAIGNS } = require('../lib/campaigns.ts');
+  const { CAMPAIGN_COPY, campaignContent } = require('../lib/campaigns-i18n.ts');
+  const { translate } = require('../lib/i18n/core.ts');
+  assert.match(CAMPAIGNS[0].mechanic, /prize valued at EUR150/);
+  assert.doesNotMatch(CAMPAIGNS[0].mechanic, /EUR?150 cash|€150 cash|€100 cash/);
+  for (const code of require('../lib/i18n/available.json')) {
+    const messages = JSON.parse(fs.readFileSync(path.join(__dirname, '../public/locales', `${code}.json`), 'utf8'));
+    assert.equal(Object.hasOwn(messages, 'Prêmio em dinheiro'), false, code);
+    const description = campaignContent('salon-sales', source => translate(messages, source)).mechanic;
+    assert.match(description, /EUR150/, code);
+    assert.match(description, /EUR100/, code);
+    const label = translate(messages, CAMPAIGN_COPY.prize_valued_at, { value: 'EUR150' });
+    assert.ok(label.includes('EUR150') && !label.includes('{value}'), code);
+  }
+});

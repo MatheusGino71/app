@@ -1,5 +1,9 @@
 # GRACE PRO — Inteligência Comercial
 
+Consulte [identidade visual, domínio e proteção de dados](docs/identidade-e-protecao-dados.md) para a paleta baseada na referência corporativa, a nova redação dos prêmios e as configurações pendentes para a operação europeia.
+
+A [central de privacidade e segurança](docs/operacao-privacidade.md) está em `/conta`, com MFA, códigos de recuperação, encerramento de sessões, solicitações de titulares, exportação, correção, restrição e exclusão verificada de salões. O aviso `/privacidade` depende dos dados legais aprovados da empresa. Use `npm run preflight:production` para conferir as configurações antes da operação real.
+
 Aplicação Next.js para o time comercial interno da Grace Pro, com painel de carteiras, diagnóstico Deep Test, painel de campanhas e eventos, e classificação comercial dos salões. O acesso exige conta da equipe; o cadastro público de clientes está desativado.
 
 O idioma padrão da interface é inglês. O acesso e o cadastro incluem seleção de idioma com busca e bandeiras; a troca é feita somente pelo seletor e fica salva para acompanhar o diagnóstico e os níveis. Consulte [idiomas da interface](docs/idiomas.md) para os catálogos locais, ajustes de tradução e manutenção.
@@ -106,7 +110,7 @@ O comando verifica nomes e formatos básicos sem imprimir segredos. O endpoint `
 
 ```bash
 npm run backup
-npm run restore -- caminho/backup.enc
+npm run restore -- caminho/backup.enc caminho/erasure-ledger.enc
 ```
 
 Os backups usam AES-256-GCM, com a chave `ATELIER_BACKUP_KEY` (32 bytes em hexadecimal). A chave deve ficar fora do Git e também ser guardada em local seguro separado do backup. Perder essa chave impede a restauração.

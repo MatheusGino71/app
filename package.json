@@ -11,9 +11,10 @@
     "audit:i18n": "node scripts/audit-i18n.cjs",
     "test": "node --test tests/*.test.cjs",
     "test:http": "node scripts/http-smoke.cjs",
-    "backup": "node --env-file-if-exists=.env.local scripts/backup.cjs",
-    "restore": "node --env-file-if-exists=.env.local scripts/backup.cjs restore",
-    "preflight": "node --env-file-if-exists=.env.local scripts/preflight.cjs"
+    "backup": "node --env-file-if-exists=.env.local scripts/backup-verified.cjs",
+    "restore": "node --env-file-if-exists=.env.local scripts/backup-verified.cjs restore",
+    "preflight": "node --env-file-if-exists=.env.local scripts/preflight.cjs",
+    "preflight:production": "node --env-file-if-exists=.env.local scripts/production-readiness.cjs"
   },
   "engines": {
     "node": ">=22.13.0"

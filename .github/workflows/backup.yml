@@ -21,7 +21,9 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
-      - run: node scripts/backup.cjs
+      - run: node scripts/backup-verified.cjs
+      - name: Record successful recovery verification
+        run: echo "Encrypted backup and isolated restoration verified on $(date -u)." >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         with:
           name: backup-encrypted-${{ github.run_id }}

@@ -11,7 +11,7 @@ export const CAMPAIGN_COPY = {
   "btn_save": "Salvar inscrição",
   "btn_saving": "Salvando…",
   "budget_ceiling": "Teto do orçamento",
-  "cash_prize": "Prêmio em dinheiro",
+  "prize_valued_at": "Prêmio avaliado em {value}",
   "col_actions": "Ações",
   "col_order_ref": "Referência do pedido",
   "col_packages": "Pacotes",
@@ -145,7 +145,7 @@ const CAMPAIGN_CONTENT = {
   "salon-sales": {
     "name": "Competição de vendas em salões",
     "subtitle": "Uma competição de sell-out de Home Care durante 30 dias em cada salão.",
-    "mechanic": "150 unidades de Home Care por salão. Três profissionais premiados por salão elegível: €150 em dinheiro, €100 em dinheiro e €50 em produtos a valor de tabela.",
+    "mechanic": "150 unidades de Home Care por salão. Três profissionais premiados por salão elegível: prêmio avaliado em EUR150, prêmio avaliado em EUR100 e prêmio em produtos avaliado em EUR50 a valor de tabela. Os prêmios não são pagos em dinheiro.",
     "timeline": [
       "Semana 1 · Confirme salões, regras, treinamento e estoque inicial.",
       "Semana 2 · Acompanhe as vendas e apoie as equipes.",

@@ -3,7 +3,7 @@ import AccountForm from "../components/account-form";
 import "./account.css";
 
 export const metadata: Metadata = {
-  title: "Team access — ATELIER.",
+  title: "Team access — GRACE PRO",
   description: "Internal access for the Grace Pro commercial team.",
   robots: { index: false, follow: false },
 };

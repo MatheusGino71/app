@@ -1,0 +1,29 @@
+/* Shared brand roles also apply outside the workspace (login, entry and diagnostics). */
+html, body { background: var(--brand-paper); color: var(--brand-ink); font-family: var(--font-body); }
+:root .crm {
+  --crm-bg: var(--brand-paper);
+  --crm-surface: var(--brand-surface);
+  --crm-ink: var(--brand-ink);
+  --crm-muted: var(--brand-muted);
+  --crm-border: var(--brand-line);
+  --crm-accent: var(--brand-accent);
+  --crm-accent-soft: var(--brand-soft);
+  --crm-gold: var(--brand-accent);
+}
+:root .account-page { --account-accent: var(--brand-accent); --account-text: var(--brand-ink); --account-muted: var(--brand-muted); --account-line: var(--brand-line); background: var(--brand-paper); }
+:root .crm-journey { --journey-line: var(--brand-line); --journey-accent: var(--brand-accent); background: var(--brand-paper); }
+:root .crm-campaigns { --campaign-accent: var(--brand-accent); --campaign-soft: var(--brand-soft); --campaign-sand: var(--brand-paper); --campaign-gold: var(--brand-accent); }
+.crm-sidebar, .crm-topbar, .crm-card, .crm-metrics article, .account-shell, .journey-header { background: var(--brand-surface); }
+.crm-btn.primary { background: var(--brand-accent); border-color: var(--brand-accent); color: var(--brand-surface); }
+.crm-btn.primary:hover { background: var(--brand-accent-hover); border-color: var(--brand-accent-hover); }
+.crm-hero, .crm-campaign-hero { background: var(--brand-soft); border-color: var(--brand-line); }
+.crm-hero::before, .crm-campaign-hero::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--brand-rose); opacity: .65; }
+.crm-sidebar-note { border-color: var(--brand-line); }
+.crm-sidebar-note h4, .crm-hero h2, .crm-page-head h1, .crm-card-head h3, .crm-campaign-hero h2 { color: var(--brand-accent); }
+.crm-sidebar nav button.active { color: var(--brand-accent); background: var(--brand-soft); }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--brand-accent); outline-offset: 3px; }
+
+/* Keep the operational typography compact; reserve the editorial serif for headings. */
+.account-form-wrap h1, .account-art-heading h2 { font-family: var(--font-display); letter-spacing: -.035em; }
+.account-art-heading h2 em { color: var(--brand-sand); }
+.crm-podium-card > span { line-height: 1.5; }

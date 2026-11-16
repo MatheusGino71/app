@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import LanguageProvider from "./components/i18n/language-provider";
 import "./components/i18n/language.css";
+import "./brand.css";
 
 export const metadata: Metadata = {
   title: "GRACE PRO — Commercial Intelligence",

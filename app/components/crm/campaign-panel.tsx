@@ -69,10 +69,10 @@ export default function CampaignPanel({
   };
 
   const statusColors: Record<CampaignStatus, { bg: string; text: string; border: string }> = {
-    planned: { bg: "#f4f5f3", text: "#4c5549", border: "#dcdfd6" },
+    planned: { bg: "#f4f5f3", text: "#664e38", border: "#e8dacd" },
     contacted: { bg: "#eef3f7", text: "#244d70", border: "#cfdbe4" },
     confirmed: { bg: "#fbf6e8", text: "#87621c", border: "#eadcbe" },
-    completed: { bg: "#edf4ed", text: "#2c5b37", border: "#cbe0cf" },
+    completed: { bg: "#f6f0eb", text: "#574330", border: "#e5d5c6" },
     cancelled: { bg: "#fbf0f0", text: "#8c2e2e", border: "#eecfcf" },
   };
 
@@ -351,7 +351,7 @@ export default function CampaignPanel({
                                   display: "inline-block",
                                   marginLeft: "6px",
                                   fontSize: "11px",
-                                  color: totalUnits >= 150 ? "#2c5b37" : "var(--crm-muted)",
+                                  color: totalUnits >= 150 ? "#574330" : "var(--crm-muted)",
                                 }}
                               >
                                 ({Math.round((totalUnits / 150) * 100)}%)
@@ -431,20 +431,20 @@ export default function CampaignPanel({
                   <div className="crm-podium-card gold">
                     <div className="crm-podium-rank">{ct("first_place")}</div>
                     <div className="crm-podium-val">{money(150)}</div>
-                    <span>{ct("cash_prize")}</span>
+                    <span>{t(CAMPAIGN_COPY.prize_valued_at, { value: "EUR150" })}</span>
                     <small>{number(50)}% {ct("total_share")}</small>
                   </div>
                   <div className="crm-podium-card silver">
                     <div className="crm-podium-rank">{ct("second_place")}</div>
                     <div className="crm-podium-val">{money(100)}</div>
-                    <span>{ct("cash_prize")}</span>
+                    <span>{t(CAMPAIGN_COPY.prize_valued_at, { value: "EUR100" })}</span>
                     <small>{number(100 / 3, 1)}% {ct("total_share")}</small>
                   </div>
                   <div className="crm-podium-card bronze">
                     <div className="crm-podium-rank">{ct("third_place")}</div>
                     <div className="crm-podium-val">{money(50)}</div>
-                    <span>{ct("product_prize")}</span>
-                    <small>{ct("retail_price_list")} ({number(100 / 6, 1)}%)</small>
+                    <span>{t(CAMPAIGN_COPY.prize_valued_at, { value: "EUR50" })}</span>
+                    <small>{ct("product_prize")} · {ct("retail_price_list")} ({number(100 / 6, 1)}%)</small>
                   </div>
                 </div>
               </div>

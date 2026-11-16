@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ArrowLeft, ArrowRight, Check, Eye, EyeOff, Info, LockKeyhole, Sparkles } from "lucide-react";
 type Mode = "login" | "signup" | "forgot" | "reset";
-type Field = "name" | "email" | "password" | "confirmPassword" | "code";
+type Field = "name" | "email" | "password" | "confirmPassword" | "code" | "otp";
 const copy = {
   login: { eyebrow: "ACESSO DA EQUIPE GRACE PRO", title: "Entrar", description: "", submit: "Entrar na minha conta" },
   signup: { eyebrow: "ACESSO DA EQUIPE GRACE PRO", title: "Criar conta", description: "", submit: "Criar conta" },
@@ -15,7 +15,7 @@ const copy = {
 export default function AccountForm({ embedded = false, onBack, initialMode = "login", initialCode = "" }: { embedded?: boolean; onBack?: () => void; initialMode?: Mode; initialCode?: string }) {
   const { t } = useI18n();
   const [mode, setMode] = useState<Mode>(initialMode);
-  const [values, setValues] = useState<Record<Field,string>>({ name: "", email: "", password: "", confirmPassword: "", code: initialCode });
+  const [values, setValues] = useState<Record<Field,string>>({ name: "", email: "", password: "", confirmPassword: "", code: initialCode, otp: "" });
   const [errors, setErrors] = useState<Partial<Record<Field,string>>>({});
   const [visiblePassword, setVisiblePassword] = useState(false); const [remember, setRemember] = useState(false);
   const [notice, setNotice] = useState(""); const [busy, setBusy] = useState(false); const [needsSetup, setNeedsSetup] = useState(false); const [mailReady, setMailReady] = useState(false); const [transition, setTransition] = useState(false);
@@ -40,7 +40,7 @@ export default function AccountForm({ embedded = false, onBack, initialMode = "l
       else if (mode === "reset") { setMode("login"); setNotice("Senha atualizada. Entre com sua nova senha."); }
       else { setTransition(true); if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) await new Promise(resolve => setTimeout(resolve, 550)); window.location.assign(result.redirectTo || "/workspace"); }
     } catch (e) { setNotice((e as Error).message); }
-    finally { setValues(v => ({ ...v, password: "", confirmPassword: "" })); setBusy(false); }
+    finally { setValues(v => ({ ...v, password: "", confirmPassword: "", otp: "" })); setBusy(false); }
   }
   function input(field: Field, label: string, type = "text", autoComplete = "off") {
     return <div className="account-field"><label htmlFor={`account-${field}`}>{t(label)}</label><input id={`account-${field}`} name={field} type={type} autoComplete={autoComplete} value={values[field]} onChange={e => update(field,e.target.value)} required aria-invalid={!!errors[field]} aria-describedby={errors[field] ? `${field}-error` : undefined} />{errors[field] && <span className="account-error" id={`${field}-error`}>{t(errors[field]!)}</span>}</div>;
@@ -56,13 +56,14 @@ export default function AccountForm({ embedded = false, onBack, initialMode = "l
         {(mode === "signup" || mode === "reset") && input("confirmPassword","Confirmar senha",visiblePassword ? "text" : "password","new-password")}
         {(mode === "reset" || mode === "signup") && input("code",mode === "reset" ? "Código de recuperação" : needsSetup ? "Código de configuração da equipe" : "Código de convite da equipe")}
         {mode === "login" && <div className="account-options"><label className="account-remember"><input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)}/>{t("Manter conectado")}</label><button type="button" className="account-text-button" onClick={() => changeMode(mailReady ? "forgot" : "reset")}>{t("Esqueceu a senha?")}</button></div>}
+        {mode === "login" && <div className="account-field"><label htmlFor="account-otp">{t("Authenticator or recovery code")}</label><input id="account-otp" name="otp" autoComplete="one-time-code" value={values.otp} maxLength={64} onChange={e => update("otp", e.target.value)} /><small>{t("Only required if two-step authentication is active.")}</small></div>}
         <button className="account-submit" disabled={busy} type="submit">{busy ? t("Processando…") : t(current.submit)}<ArrowRight size={16}/></button>
       </form>
       {notice && <div className="account-notice" role="status"><Info size={17}/><p>{t(notice)}</p></div>}
       {mode === "signup" && <p className="account-description">{t("Contas da equipe exigem convite ou o código de configuração inicial.")}</p>}
       <p className="account-switch">{mode === "login" ? <>{t("Ainda não tem conta?")} <button type="button" onClick={() => changeMode("signup")}>{t("Criar conta")}</button></> : <>{t("Já tem uma conta?")} <button type="button" onClick={() => changeMode("login")}>{t("Entrar")}</button></>}</p>
       {mode === "forgot" && <p className="account-switch"><button type="button" onClick={() => changeMode("reset")}>{t("Já tenho um código de recuperação")}</button></p>}
-      </div><div className="account-bottom"><span>© {new Date().getFullYear()} {t("Grace Pro")}</span><span><LockKeyhole size={12}/>{t("Informação com propósito.")}</span></div>
+      </div><div className="account-bottom"><span>© {new Date().getFullYear()} {t("Grace Pro")}</span><Link href="/privacidade">{t("Privacy notice")}</Link><span><LockKeyhole size={12}/>{t("Informação com propósito.")}</span></div>
     </section>
       <aside className="account-art" aria-label={t("Conheça melhor. Conquiste mais.")}>
         <div className="account-art-texture" aria-hidden="true"><span className="account-ribbon ribbon-one" /><span className="account-ribbon ribbon-two" /><span className="account-ribbon ribbon-three" /><span className="account-ribbon ribbon-four" /><span className="account-ribbon ribbon-five" /></div>

@@ -79,7 +79,7 @@ export default function GraceProEntry() {
     <GlyphPortal word="GRACE PRO" focusChar="G" interactive={false} immersive scrollLength={1.6}
       fontFamily='"Arial Black", "Helvetica Neue", Arial, sans-serif' fontWeight={900}
       showEnterButton={false} enterLabel={t("Entrar")} hint={t("Continuar")} className="entry-portal" onEnter={() => play()} onProgress={onProgress}
-      style={{ "--gp-paper": "#f5f5f0", "--gp-ink": "#263d30", "--gp-field": "#203b2e", "--gp-foreground": "#f5f2e9" }}
+      style={{ "--gp-paper": "#f7f2ee", "--gp-ink": "#403123", "--gp-field": "#3b2d20", "--gp-foreground": "#f5f2e9" }}
       background={<div className="entry-field" aria-hidden="true"><span /><span /><span /></div>}
     >
       <AccountForm embedded onBack={() => play(true)} />
