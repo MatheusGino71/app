@@ -3,7 +3,7 @@ import { useI18n } from "../i18n/language-provider";
 import { languageFor } from "../../../lib/i18n/core";
 import LanguageSelector from "../i18n/language-selector";
 import Link from "next/link";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ArrowRight, ArrowUpRight, Check, ChevronRight, ClipboardList, Download, Layers3, LayoutDashboard, LogOut, Menu, Plus, RefreshCw, Search, Settings2, ShieldCheck, Sparkles, Target, Trophy, Upload, Users, X } from "lucide-react";
 import { actionFromVisit, CRITERIA, DIMENSIONS, LABELS, RULE_VERSION, categoryFor, emptyDiagnostic, latestVisit, makeVisit, parseDiagnostic, parseDraft, parseSalon, type Category, type CommercialAction, type Dimension, type Draft, type Salon, type User, type WorkspaceData } from "../../../lib/domain";
 import { createDemoData } from "../../../lib/demo";
@@ -28,6 +28,8 @@ export default function Workspace({ demo, user, initialData }: { demo: boolean; 
   const [selected, setSelected] = useState<{ salonId: string; visitId?: string } | null>(null);
   const [form, setForm] = useState<{ draft: Draft | null } | null>(null); const [agreementId, setAgreementId] = useState<string | null>(null);
   const [toast, setToast] = useState(""); const [error, setError] = useState(""); const [busy, setBusy] = useState(false); const [mobileNav, setMobileNav] = useState(false);
+  const menuRef = useRef<HTMLButtonElement>(null);
+  const sidebarRef = useRef<HTMLElement>(null);
   const [importOpen, setImportOpen] = useState(false); const [actionFilter, setActionFilter] = useState("pending");
   const [inviteEmail, setInviteEmail] = useState(""); const [inviteRole, setInviteRole] = useState("comercial"); const [issuedCode, setIssuedCode] = useState<{ kind: "invite" | "reset"; email: string; code: string; expiresIn: string } | null>(null);
   const accessCode = issuedCode ? t(issuedCode.kind === "invite" ? "Invitation for {email}: {code}\nExpires in: {expires}. Share the code through your team's channel." : "Recovery for {email}: {code}\nExpires in: {expires}. Use it on the account recovery screen.", { email: issuedCode.email, code: issuedCode.code, expires: t(issuedCode.expiresIn) }) : "";
@@ -38,6 +40,31 @@ export default function Workspace({ demo, user, initialData }: { demo: boolean; 
     try { const raw = localStorage.getItem(DEMO_KEY); if (raw) { const saved = JSON.parse(raw); if (saved.schema === 2 && Array.isArray(saved.data.salons) && Array.isArray(saved.data.visits) && Array.isArray(saved.data.actions)) setData(saved.data); } } catch { setError("Não foi possível restaurar a demonstração deste navegador."); }
   }, [demo]);
   useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(""), 6000); return () => clearTimeout(t); }, [toast]);
+  useEffect(() => {
+    if (!mobileNav) return;
+    const media = window.matchMedia("(max-width: 760px)");
+    if (!media.matches) { setMobileNav(false); return; }
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    sidebarRef.current?.querySelector<HTMLButtonElement>(".crm-sidebar-close")?.focus();
+    const closeOnDesktop = () => { if (!media.matches) setMobileNav(false); };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileNav(false);
+      if (event.key !== "Tab") return;
+      const controls = sidebarRef.current?.querySelectorAll<HTMLElement>("a[href], button:not(:disabled)");
+      const first = controls?.[0]; const last = controls?.[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    };
+    media.addEventListener("change", closeOnDesktop);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      media.removeEventListener("change", closeOnDesktop);
+      document.removeEventListener("keydown", onKeyDown);
+      if (media.matches) menuRef.current?.focus({ preventScroll: true });
+    };
+  }, [mobileNav]);
   function commit(next: WorkspaceData) { if (demo) localStorage.setItem(DEMO_KEY, JSON.stringify({ schema: 2, data: next })); setData(next); }
   async function mutate(action: string, payload?: unknown): Promise<Result> {
     if (!demo) {
@@ -104,8 +131,8 @@ export default function Workspace({ demo, user, initialData }: { demo: boolean; 
   return <div className="crm">
     <a className="crm-skip" href="#workspace-content">{t("Ir para o conteúdo")}</a>
     {mobileNav && <button className="crm-nav-scrim" aria-label={t("Fechar navegação")} onClick={() => setMobileNav(false)} />}
-    <aside className={`crm-sidebar ${mobileNav ? "open" : ""}`}><Link href="/" className="crm-brand">{t("GRACE PRO")}<span>.</span></Link><span className="crm-brand-sub">{t("INTELIGÊNCIA COMERCIAL")}</span><button className="crm-operation" onClick={() => navigate("overview")}><span>{t("G")}</span><span><strong>{t("Grace Pro")}</strong><small>{t("Workspace comercial")}</small></span><ShieldCheck size={16} /></button><div className="crm-nav-label">{t("SEU WORKSPACE")}</div><nav aria-label={t("Principal")}>{NAV.map(({ id, label, icon: Icon }) => <button key={id} onClick={() => navigate(id)} className={view === id ? "active" : ""}><Icon size={19} strokeWidth={1.7} /><span>{t(label)}</span>{id === "actions" && pending.length > 0 && <small>{pending.length}</small>}</button>)}</nav><div className="crm-sidebar-note"><Sparkles size={19} /><h4>{t("Conhecer para crescer.")}</h4><p>{t("Compra atual, potencial real e relações que evoluem.")}</p><button onClick={() => navigate("ratings")}>{t("Conhecer os critérios")} <ArrowUpRight size={14} /></button></div><button className={`crm-settings ${view === "settings" ? "active" : ""}`} onClick={() => navigate("settings")}><Settings2 size={18} />{t("Gestão da operação")}</button><div className="crm-user"><span className="crm-avatar">{user.name.split(" ").map(v => v[0]).slice(0, 2).join("")}</span><span><strong>{user.name}</strong><small>{demo ? t("Demonstração") : user.role === "admin" ? t("Administrador") : user.role === "gestor" ? t("Gestor") : t("Comercial")}</small></span><button className="crm-icon" aria-label={demo ? t("Voltar ao acesso") : t("Sair da conta")} onClick={() => { void run(async () => { if (!demo) { const r = await fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "logout" }) }); if (!r.ok) throw new Error("Não foi possível encerrar a sessão."); } window.location.assign("/entrar"); }); }}><LogOut size={17} /></button></div></aside>
-    <div className="crm-main"><header className="crm-topbar"><button className="crm-icon crm-menu" aria-label={t("Abrir navegação")} onClick={() => setMobileNav(true)}><Menu size={22} /></button><span>{t("Workspace")} <ChevronRight size={13} /><strong>{t(navLabel)}</strong></span><div><LanguageSelector/><span className={demo ? "crm-mode demo" : "crm-mode"}><i />{demo ? t("DEMONSTRAÇÃO") : t("GRACE PRO")}</span>{!demo && <button className="crm-icon" aria-label={t("Atualizar dados")} disabled={busy} onClick={() => { void refresh(); }}><RefreshCw size={17} /></button>}<button className="crm-icon" title={t("Exportar seleção de salões")} aria-label={t("Exportar seleção de salões")} onClick={exportCSV}><Download size={18} /></button></div></header>
+    <aside ref={sidebarRef} id="workspace-navigation" className={`crm-sidebar ${mobileNav ? "open" : ""}`}><div className="crm-sidebar-scroll"><div className="crm-sidebar-heading"><Link href="/" className="crm-brand">{t("GRACE PRO")}<span>.</span></Link><button className="crm-icon crm-sidebar-close" aria-label={t("Fechar navegação")} onClick={() => setMobileNav(false)}><X size={22} /></button></div><span className="crm-brand-sub">{t("INTELIGÊNCIA COMERCIAL")}</span><button className="crm-operation" onClick={() => navigate("overview")}><span>{t("G")}</span><span><strong>{t("Grace Pro")}</strong><small>{t("Workspace comercial")}</small></span><ShieldCheck size={16} /></button><div className="crm-nav-label">{t("SEU WORKSPACE")}</div><nav aria-label={t("Principal")}>{NAV.map(({ id, label, icon: Icon }) => <button key={id} onClick={() => navigate(id)} className={view === id ? "active" : ""}><Icon size={19} strokeWidth={1.7} /><span>{t(label)}</span>{id === "actions" && pending.length > 0 && <small>{pending.length}</small>}</button>)}</nav><div className="crm-sidebar-note"><Sparkles size={19} /><h4>{t("Conhecer para crescer.")}</h4><p>{t("Compra atual, potencial real e relações que evoluem.")}</p><button onClick={() => navigate("ratings")}>{t("Conhecer os critérios")} <ArrowUpRight size={14} /></button></div></div><div className="crm-sidebar-footer"><button className={`crm-settings ${view === "settings" ? "active" : ""}`} onClick={() => navigate("settings")}><Settings2 size={18} />{t("Gestão da operação")}</button><div className="crm-user"><span className="crm-avatar">{user.name.split(" ").map(v => v[0]).slice(0, 2).join("")}</span><span><strong>{user.name}</strong><small>{demo ? t("Demonstração") : user.role === "admin" ? t("Administrador") : user.role === "gestor" ? t("Gestor") : t("Comercial")}</small></span><button className="crm-icon" aria-label={demo ? t("Voltar ao acesso") : t("Sair da conta")} onClick={() => { void run(async () => { if (!demo) { const r = await fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "logout" }) }); if (!r.ok) throw new Error("Não foi possível encerrar a sessão."); } window.location.assign("/entrar"); }); }}><LogOut size={17} /></button></div></div></aside>
+    <div className="crm-main"><header className="crm-topbar"><button ref={menuRef} className="crm-icon crm-menu" aria-expanded={mobileNav} aria-controls="workspace-navigation" aria-label={t("Abrir navegação")} onClick={() => setMobileNav(true)}><Menu size={22} /></button><span>{t("Workspace")} <ChevronRight size={13} /><strong>{t(navLabel)}</strong></span><div><LanguageSelector/><span className={demo ? "crm-mode demo" : "crm-mode"}><i />{demo ? t("DEMONSTRAÇÃO") : t("GRACE PRO")}</span>{!demo && <button className="crm-icon" aria-label={t("Atualizar dados")} disabled={busy} onClick={() => { void refresh(); }}><RefreshCw size={17} /></button>}<button className="crm-icon" title={t("Exportar seleção de salões")} aria-label={t("Exportar seleção de salões")} onClick={exportCSV}><Download size={18} /></button></div></header>
       <main id="workspace-content" className="crm-content">
         {demo && <div className="crm-demo-banner"><span>{t("Ambiente fictício · alterações salvas somente neste navegador.")}</span><Link href="/entrar">{t("Acessar minha operação")} <ArrowUpRight size={14} /></Link></div>}
         {error && <div className="crm-error-banner" role="alert"><span>{t(error)}</span><button className="crm-icon" aria-label={t("Dispensar erro")} onClick={() => setError("")}><X size={16} /></button></div>}
